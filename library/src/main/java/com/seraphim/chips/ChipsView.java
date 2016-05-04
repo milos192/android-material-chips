@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.doodle.android.chips;
+package com.seraphim.chips;
 
 import android.annotation.TargetApi;
 import android.content.Context;

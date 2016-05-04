@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package com.doodle.android.chips;
+package com.seraphim.chips;
 
 import android.content.Context;
 import android.view.View;
 import android.widget.LinearLayout;
-
-import com.doodle.android.chips.ChipsView;
 
 import java.util.ArrayList;
 import java.util.List;
