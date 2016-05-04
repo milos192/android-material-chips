@@ -24,10 +24,8 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.InputType;
@@ -50,9 +48,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.doodle.android.chips.dialog.ChipsEmailDialogFragment;
 import com.doodle.android.chips.model.Contact;
-import com.doodle.android.chips.util.Common;
 import com.doodle.android.chips.views.ChipsEditText;
 import com.doodle.android.chips.views.ChipsVerticalLinearLayout;
 import com.squareup.picasso.Callback;
@@ -62,7 +58,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ChipsView extends ScrollView implements ChipsEditText.InputConnectionWrapperInterface, ChipsEmailDialogFragment.EmailListener {
+public class ChipsView extends ScrollView implements ChipsEditText.InputConnectionWrapperInterface {
 
     //<editor-fold desc="Static Fields">
     private static final String TAG = "ChipsView";
@@ -140,7 +136,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if(mMaxHeight != DEFAULT_MAX_HEIGHT) {
+        if (mMaxHeight != DEFAULT_MAX_HEIGHT) {
             heightMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxHeight, MeasureSpec.AT_MOST);
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -318,7 +314,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     public Contact tryToRecognizeAddress() {
         String text = mEditText.getText().toString();
         if (!TextUtils.isEmpty(text)) {
-            if (Common.isValidEmail(text)) {
+            if (isValidEmail(text)) {
                 return new Contact(text, "", null, text, null);
             }
         }
@@ -339,6 +335,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     //</editor-fold>
 
     //<editor-fold desc="Private Methods">
+
     /**
      * rebuild all chips and place them right
      */
@@ -388,11 +385,11 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
 
     private void onEnterPressed(String text) {
         if (text != null && text.length() > 0) {
-
-            if (Common.isValidEmail(text)) {
+            if (isValidEmail(text)) {
                 onEmailRecognized(text);
             } else {
-                onNonEmailRecognized(text);
+                Snackbar.make(mChipsContainer, "Данные не корректны", Snackbar.LENGTH_SHORT).show();
+//                mEditText.setText("");
             }
             mEditText.setSelection(0);
         }
@@ -414,27 +411,6 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
                 onChipsChanged(true);
             }
         });
-    }
-
-    private void onNonEmailRecognized(String text) {
-        try {
-            FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
-
-            Bundle bundle = new Bundle();
-            bundle.putString(ChipsEmailDialogFragment.EXTRA_STRING_TEXT, text);
-            bundle.putString(ChipsEmailDialogFragment.EXTRA_STRING_TITLE, mChipsDialogTitle);
-            bundle.putString(ChipsEmailDialogFragment.EXTRA_STRING_PLACEHOLDER, mChipsDialogPlaceholder);
-            bundle.putString(ChipsEmailDialogFragment.EXTRA_STRING_CONFIRM, mChipsDialogConfirm);
-            bundle.putString(ChipsEmailDialogFragment.EXTRA_STRING_CANCEL, mChipsDialogCancel);
-            bundle.putString(ChipsEmailDialogFragment.EXTRA_STRING_ERROR_MSG, mChipsDialogErrorMsg);
-
-            ChipsEmailDialogFragment chipsEmailDialogFragment = new ChipsEmailDialogFragment();
-            chipsEmailDialogFragment.setArguments(bundle);
-            chipsEmailDialogFragment.setEmailListener(this);
-            chipsEmailDialogFragment.show(fragmentManager, ChipsEmailDialogFragment.class.getSimpleName());
-        } catch (ClassCastException e) {
-            Log.e(TAG, "Error ClassCast", e);
-        }
     }
 
     private void selectOrDeleteLastChip() {
@@ -462,12 +438,6 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
                 mChipsListener.onChipDeleted(chip);
             }
             onChipsChanged(true);
-            if (nameClicked) {
-                mEditText.setText(chip.getContact().getEmailAddress());
-                addLeadingMarginSpan();
-                mEditText.requestFocus();
-                mEditText.setSelection(mEditText.length());
-            }
         } else {
             chip.setSelected(true);
             onChipsChanged(false);
@@ -486,19 +456,16 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     private void unselectAllChips() {
         unselectChipsExcept(null);
     }
+
+    private boolean isValidEmail(CharSequence target) {
+        return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
     //</editor-fold>
 
     //<editor-fold desc="InputConnectionWrapperInterface Implementation">
     @Override
     public InputConnection getInputConnection(InputConnection target) {
         return new KeyInterceptingInputConnection(target);
-    }
-    //</editor-fold>
-
-    //<editor-fold desc="EmailListener Implementation">
-    @Override
-    public void onDialogEmailEntered(String email, String initialText) {
-        onEmailRecognized(new Contact(initialText, "", initialText, email, null));
     }
     //</editor-fold>
 

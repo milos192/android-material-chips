@@ -32,6 +32,11 @@ dependencies {
         exclude module: 'support-v4'
         transitive = true
     }
+    compile('com.android.support:design:23.3.0') {
+        exclude module: 'support-v4'
+        exclude module: 'appcompat-v7'
+        exclude module: 'recyclerview-v7'
+    }
     testCompile 'junit:junit:4.12'
 }
 
