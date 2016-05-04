@@ -18,6 +18,7 @@ package com.doodle.android.chips.sample;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,40 +38,36 @@ import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
-    private RecyclerView mContacts;
-    private ContactsAdapter mAdapter;
-    private ChipsView mChipsView;
+    private RecyclerView contacts;
+    private ContactsAdapter adapter;
+    private ChipsView chipsView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mContacts = (RecyclerView) findViewById(R.id.rv_contacts);
-        mContacts.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-        mAdapter = new ContactsAdapter();
-        mContacts.setAdapter(mAdapter);
+        contacts = (RecyclerView) findViewById(R.id.rv_contacts);
+        contacts.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+        adapter = new ContactsAdapter();
+        contacts.setAdapter(adapter);
 
-        mChipsView = (ChipsView) findViewById(R.id.cv_contacts);
+        chipsView = (ChipsView) findViewById(R.id.cv_contacts);
 
         // change EditText config
-        mChipsView.getEditText().setCursorVisible(true);
+        chipsView.getEditText().setCursorVisible(true);
 
-        mChipsView.setChipsValidator(new ChipsView.ChipValidator() {
+        chipsView.setChipsValidator(new ChipsView.ChipValidator() {
             @Override
-            public boolean isValid(Contact contact) {
-                if (contact.getDisplayName().equals("asd@qwe.de")) {
-                    return false;
-                }
-                return true;
+            public boolean isValid(ChipsView.ChipEntry entry) {
+                return !entry.displayedName().equals("asd@qwe.de");
             }
         });
 
-        mChipsView.setChipsListener(new ChipsView.ChipsListener() {
+        chipsView.setChipsListener(new ChipsView.ChipsListener() {
             @Override
             public void onChipAdded(ChipsView.Chip chip) {
-                for (ChipsView.Chip chipItem : mChipsView.getChips()) {
+                for (ChipsView.Chip chipItem : chipsView.getChips()) {
                     Log.d("ChipList", "chip: " + chipItem.toString());
                 }
             }
@@ -82,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence text) {
-                mAdapter.filterItems(text);
+                adapter.filterItems(text);
             }
         });
     }
@@ -163,13 +160,42 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             String email = name.getText().toString();
             Uri imgUrl = Math.random() > .7d ? null : Uri.parse("https://robohash.org/" + Math.abs(email.hashCode()));
-            Contact contact = new Contact(null, null, null, email, imgUrl);
+            SimpleChipEntry chipEntry = new SimpleChipEntry(email, imgUrl);
 
             if (selection.isChecked()) {
-                mChipsView.addChip(email, imgUrl, contact);
+                chipsView.addChip(chipEntry);
             } else {
-                mChipsView.removeChipBy(contact);
+                chipsView.removeChipBy(chipEntry);
             }
+        }
+    }
+
+    public class SimpleChipEntry implements ChipsView.ChipEntry {
+        private int id = 0;
+        private String email;
+        private Uri imageUri;
+
+        public SimpleChipEntry(String email, @Nullable Uri imageUri) {
+            this.email = email;
+            this.imageUri = imageUri;
+
+            id += email.hashCode();
+            if (imageUri != null) id += imageUri.hashCode();
+        }
+
+        @Override
+        public String displayedName() {
+            return email;
+        }
+
+        @Override
+        public Uri avatarUri() {
+            return imageUri;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return o instanceof SimpleChipEntry && ((SimpleChipEntry) o).id == id;
         }
     }
 }
