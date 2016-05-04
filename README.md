@@ -85,16 +85,12 @@ Include ```xmlns:app="http://schemas.android.com/apk/res-auto"``` and customize 
     app:cv_text_color_error_clicked="#000"
     app:cv_icon_placeholder="@drawable/ic_bug_report_24dp"
     app:cv_icon_delete="@drawable/ic_close_24dp"
-    app:cv_dialog_title="This is the title"
-    app:cv_dialog_et_placeholder="email2"
-    app:cv_dialog_confirm="confirm2"
-    app:cv_dialog_cancel="cancel2"
 ```
 ======
 Find the View in your Activity or Fragment class.
 
 ```java
-mChipsView = (ChipsView) findViewById(R.id.chipsView);
+сhipsView = (ChipsView) findViewById(R.id.chipsView);
 ```
 
 **Listener**
@@ -102,7 +98,7 @@ mChipsView = (ChipsView) findViewById(R.id.chipsView);
 The ChipsView provides a listener to interact with your data.
 
 ```java
-mChipsView.setChipsListener(new ChipsView.ChipsListener() {
+сhipsView.setChipsListener(new ChipsView.ChipsListener() {
     @Override
     public void onChipAdded(ChipsView.Chip chip) {
         // chip added
@@ -123,25 +119,25 @@ mChipsView.setChipsListener(new ChipsView.ChipsListener() {
 **Add a new chip**
 
 ```java
-mChipsView.addChip(email, imgUrl, contact);
+сhipsView.addChip(email, imgUrl, contact);
 ```
 
 **Add a non-removable chip.**
 
 ```java
-mChipsView.addChip(email, imgUrl, contact, true);
+сhipsView.addChip(email, imgUrl, contact, true);
 ```
 
 **Remove a chip**
 
 ```java
-mChipsView.removeChipBy(contact);
+сhipsView.removeChipBy(contact);
 ```
 
 **Add Custom chip validator**
 
 ```java
-mChipsView.setChipsValidator(new ChipsView.ChipValidator() {
+сhipsView.setChipsValidator(new ChipsView.ChipValidator() {
     @Override
     public boolean isValid(Contact contact) {
         return true;
@@ -152,10 +148,6 @@ mChipsView.setChipsValidator(new ChipsView.ChipValidator() {
 <p>
 <img src="./images/chip_error.png" title="Chip Error" width="80%" />
 </p>
-
-##Apps with Android chips:
-
-* [Doodle](https://doodle.com) Android App: [Play Store](https://play.google.com/store/apps/details?id=com.doodle.android)
 
 ## License
 
