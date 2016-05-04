@@ -389,7 +389,6 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
                 onEmailRecognized(text);
             } else {
                 Snackbar.make(mChipsContainer, "Данные не корректны", Snackbar.LENGTH_SHORT).show();
-//                mEditText.setText("");
             }
             mEditText.setSelection(0);
         }
@@ -423,14 +422,14 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         try {
             Chip chip = mChipList.get(position);
             if (chip != null) {
-                onChipInteraction(chip, true);
+                onChipInteraction(chip);
             }
         } catch (IndexOutOfBoundsException e) {
             Log.e(TAG, "Out of bounds", e);
         }
     }
 
-    private void onChipInteraction(Chip chip, boolean nameClicked) {
+    private void onChipInteraction(Chip chip) {
         unselectChipsExcept(chip);
         if (chip.isSelected()) {
             mChipList.remove(chip);
@@ -685,11 +684,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         @Override
         public void onClick(View v) {
             mEditText.clearFocus();
-            if (v.getId() == mView.getId()) {
-                onChipInteraction(this, true);
-            } else {
-                onChipInteraction(this, false);
-            }
+            onChipInteraction(this);
         }
 
         public boolean isSelected() {

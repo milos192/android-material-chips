@@ -2,23 +2,30 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="32dp"
-    android:paddingRight="12dp">
+    android:paddingEnd="12dp"
+    android:paddingLeft="0dp"
+    android:paddingRight="12dp"
+    android:paddingStart="0dp"
+    >
 
     <RelativeLayout
         android:id="@+id/rl_ch_avatar"
         android:layout_width="32dp"
-        android:layout_height="32dp">
+        android:layout_height="32dp"
+        >
 
         <ImageView
             android:id="@+id/iv_ch_person"
             android:layout_width="22dp"
             android:layout_height="22dp"
             android:layout_centerInParent="true"
-            android:background="@drawable/ic_person_24dp"
             android:alpha="0.3"
-            android:gravity="center"/>
+            android:background="@drawable/ic_person_24dp"
+            android:gravity="center"
+            />
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/ri_ch_avatar"
@@ -26,16 +33,18 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
             app:riv_mutate_background="true"
-            app:riv_oval="true"/>
+            app:riv_oval="true"
+            />
 
         <ImageView
             android:id="@+id/iv_ch_close"
             android:layout_width="22dp"
             android:layout_height="22dp"
             android:layout_centerInParent="true"
-            android:background="@drawable/ic_close_24dp"
             android:alpha="0"
-            android:gravity="center"/>
+            android:background="@drawable/ic_close_24dp"
+            android:gravity="center"
+            />
     </RelativeLayout>
 
     <TextView
@@ -44,21 +53,26 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_toEndOf="@id/rl_ch_avatar"
         android:layout_toRightOf="@id/rl_ch_avatar"
         android:singleLine="true"
         android:textSize="16sp"
-        android:text="asdasd"
+        tools:text="asdasd"
         />
 
     <ImageView
         android:id="@+id/iv_ch_error"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/tv_ch_name"
         android:layout_centerVertical="true"
         android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_toEndOf="@id/tv_ch_name"
+        android:layout_toRightOf="@id/tv_ch_name"
         android:src="@drawable/ic_error_red_24dp"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        />
 
 
 </RelativeLayout>
