@@ -11,7 +11,6 @@ android {
         versionName "1.1.0"
         setProperty("archivesBaseName", "android-material-chips-$versionName")
     }
-
     buildTypes {
         release {
             minifyEnabled false

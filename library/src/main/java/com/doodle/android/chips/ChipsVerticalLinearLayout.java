@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.doodle.android.chips.views;
+package com.doodle.android.chips;
 
 import android.content.Context;
 import android.view.View;

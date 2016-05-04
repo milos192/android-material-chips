@@ -48,9 +48,6 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.doodle.android.chips.model.Contact;
-import com.doodle.android.chips.views.ChipsEditText;
-import com.doodle.android.chips.views.ChipsVerticalLinearLayout;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -732,6 +729,14 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
 
     public static abstract class ChipValidator {
         public abstract boolean isValid(Contact contact);
+    }
+
+    public interface Entry {
+        String displayedName();
+
+        Uri avatarUri();
+
+        boolean equals(Entry other);
     }
     //</editor-fold>
 }

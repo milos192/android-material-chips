@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.doodle.android.chips.model;
+package com.doodle.android.chips;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -173,7 +173,6 @@ public class Contact implements Comparable<Contact>, Serializable {
                 (mLastName != null && mLastName.toLowerCase().contains(lowerCaseSearchString)) ||
                 mEmailAddress.toLowerCase().contains(lowerCaseSearchString);
     }
-
 
     @Override
     public boolean equals(final Object o) {

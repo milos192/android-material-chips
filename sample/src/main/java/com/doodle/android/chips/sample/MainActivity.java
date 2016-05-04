@@ -30,7 +30,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.doodle.android.chips.ChipsView;
-import com.doodle.android.chips.model.Contact;
+import com.doodle.android.chips.Contact;
 
 import java.util.ArrayList;
 import java.util.Collections;
