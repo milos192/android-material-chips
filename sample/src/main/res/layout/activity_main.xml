@@ -24,7 +24,7 @@
             android:text="To"
             />
 
-        <com.doodle.android.chips.ChipsView
+        <com.seraphim.chips.ChipsView
             android:id="@+id/cv_contacts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="72dp"
+    >
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/preview"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/ic_person_24dp"
+        app:civ_fill_color="#dbdbdb"
+        />
+
+    <TextView
+        android:id="@+id/primary_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/preview"
+        android:layout_alignTop="@+id/preview"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="2dp"
+        android:layout_toEndOf="@+id/preview"
+        android:layout_toRightOf="@+id/preview"
+        android:alpha="0.87"
+        android:ellipsize="end"
+        android:gravity="center|start"
+        android:maxLines="1"
+        android:textColor="#000"
+        android:textSize="16sp"
+        tools:text="Primary text"
+        />
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_alignLeft="@id/primary_text"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignStart="@id/primary_text"
+        android:layout_below="@id/primary_text"
+        android:layout_marginTop="16dp"
+        android:alpha="0.12"
+        android:background="#000"
+        />
+</RelativeLayout>

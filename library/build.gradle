@@ -23,9 +23,6 @@ dependencies {
     compile 'com.makeramen:roundedimageview:2.0.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.android.support:appcompat-v7:23.3.0'
-    compile('com.rengwuxian.materialedittext:library:2.1.4'){
-        exclude module: 'appcompat-v7'
-    }
     compile('com.mikepenz:fastadapter:1.4.4@aar') {
         exclude module: 'appcompat-v7'
         exclude module: 'support-v4'
@@ -36,6 +33,7 @@ dependencies {
         exclude module: 'appcompat-v7'
         exclude module: 'recyclerview-v7'
     }
+    compile 'de.hdodenhof:circleimageview:2.0.0'
     testCompile 'junit:junit:4.12'
 }
 

@@ -27,6 +27,8 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Spannable;
@@ -48,6 +50,12 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.mikepenz.fastadapter.FastAdapter;
+import com.mikepenz.fastadapter.IAdapter;
+import com.mikepenz.fastadapter.IItemAdapter;
+import com.mikepenz.fastadapter.adapters.FastItemAdapter;
+import com.mikepenz.fastadapter.items.AbstractItem;
+import com.mikepenz.fastadapter.utils.ViewHolderFactory;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -97,6 +105,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     private List<Chip> chipList = new ArrayList<>();
     private Object currentEditTextSpan;
     private ChipValidator chipsValidator;
+    private FastItemAdapter<ChipItem> adapter;
     //</editor-fold>
 
     //<editor-fold desc="Constructors">
@@ -277,22 +286,39 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         return false;
     }
 
-    public Contact tryToRecognizeAddress() {
-        String text = editText.getText().toString();
-        if (!TextUtils.isEmpty(text)) {
-            if (isValidEmail(text)) {
-                return new Contact(text, "", null, text, null);
-            }
-        }
-        return null;
-    }
-
     public void setChipsListener(ChipsListener chipsListener) {
         this.chipsListener = chipsListener;
     }
 
     public void setChipsValidator(ChipValidator chipsValidator) {
         this.chipsValidator = chipsValidator;
+    }
+
+    public void setupWithRecyclerView(RecyclerView recyclerView, List<ChipEntry> resolvedChips) {
+        if (adapter == null) {
+            adapter = new FastItemAdapter<>();
+            ArrayList<ChipItem> chipItems = new ArrayList<>();
+            for (ChipEntry chip : resolvedChips) {
+                chipItems.add(new ChipItem(chip));
+            }
+            adapter.set(chipItems);
+            adapter.withFilterPredicate(new IItemAdapter.Predicate<ChipItem>() {
+                @Override
+                public boolean filter(ChipItem item, CharSequence constraint) {
+                    return !item.chip.displayedName().contains(constraint);
+                }
+            });
+            adapter.withOnClickListener(new FastAdapter.OnClickListener<ChipItem>() {
+                @Override
+                public boolean onClick(View v, IAdapter<ChipItem> adapter, ChipItem item, int position) {
+                    addChip(item.chip);
+                    return false;
+                }
+            });
+        }
+        if (recyclerView.getLayoutManager() == null)
+            recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.VERTICAL, false));
+        recyclerView.setAdapter(adapter);
     }
 
     public EditText getEditText() {
@@ -351,31 +377,13 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
 
     private void onEnterPressed(String text) {
         if (text != null && text.length() > 0) {
-            if (isValidEmail(text)) {
-                onEmailRecognized(text);
-            } else {
-                Snackbar.make(chipsContainer, "Данные не корректны", Snackbar.LENGTH_SHORT).show();
-            }
+//            if (isValidEmail(text)) {
+//                onEmailRecognized(text);
+//            } else {
+            Snackbar.make(chipsContainer, "Данные не корректны", Snackbar.LENGTH_SHORT).show();
+//            }
             editText.setSelection(0);
         }
-    }
-
-    private void onEmailRecognized(String email) {
-//        onEmailRecognized(new Contact(email, "", null, email, null));
-    }
-
-    private void onEmailRecognized(ChipEntry entry) {
-        Chip chip = new Chip(entry);
-        chipList.add(chip);
-        if (chipsListener != null) {
-            chipsListener.onChipAdded(chip);
-        }
-        post(new Runnable() {
-            @Override
-            public void run() {
-                onChipsChanged(true);
-            }
-        });
     }
 
     private void selectOrDeleteLastChip() {
@@ -421,10 +429,6 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     private void unselectAllChips() {
         unselectChipsExcept(null);
     }
-
-    private boolean isValidEmail(CharSequence target) {
-        return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
-    }
     //</editor-fold>
 
     //<editor-fold desc="InputConnectionWrapperInterface Implementation">
@@ -466,7 +470,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
                     }
                     s.clear();
                     if (text.length() > 1) {
-                        onEnterPressed(text);
+                        onEnterPressed(text); //todo rv integration
                     } else {
                         s.append(text);
                     }
@@ -517,6 +521,58 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
             }
 
             return super.deleteSurroundingText(beforeLength, afterLength);
+        }
+    }
+
+    private class ChipItem extends AbstractItem<ChipItem, ChipHolder> {
+        private ChipEntry chip;
+        private final Factory factory = new Factory();
+
+        public ChipItem(ChipEntry chip) {
+            this.chip = chip;
+        }
+
+        @Override
+        public int getType() {
+            return R.id.chip_item;
+        }
+
+        @Override
+        public int getLayoutRes() {
+            return R.layout.material_list_item_with_avatar_1;
+        }
+
+        @Override
+        public void bindView(ChipHolder holder) {
+            super.bindView(holder);
+            if (chip.avatarUri() != null)
+                Picasso.with(holder.image.getContext())
+                        .load(chip.avatarUri())
+                        .into(holder.image);
+            holder.text.setText(chip.displayedName());
+        }
+
+        @Override
+        public ViewHolderFactory<? extends ChipHolder> getFactory() {
+            return factory;
+        }
+
+        private class Factory implements ViewHolderFactory<ChipHolder> {
+            @Override
+            public ChipHolder create(View v) {
+                return new ChipHolder(v);
+            }
+        }
+    }
+
+    private class ChipHolder extends RecyclerView.ViewHolder {
+        ImageView image;
+        TextView text;
+
+        public ChipHolder(View itemView) {
+            super(itemView);
+            image = (ImageView) itemView.findViewById(R.id.preview);
+            text = (TextView) itemView.findViewById(R.id.primary_text);
         }
     }
 
@@ -679,10 +735,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         @Override
         public String toString() {
             return "{"
-                    + "[Contact: " + entry + "]"
-                    + "[Label: " + label + "]"
-                    + "[PhotoUri: " + photoUri + "]"
-                    + "[IsIndelible" + isIndelible + "]"
+                    + "[Entry: " + entry + "]"
                     + "}"
                     ;
         }
