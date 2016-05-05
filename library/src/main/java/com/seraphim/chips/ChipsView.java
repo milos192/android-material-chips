@@ -377,6 +377,10 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     public EditText getEditText() {
         return editText;
     }
+
+    public void showSuggestions() {
+        if (recyclerView != null) recyclerView.setVisibility(VISIBLE);
+    }
     //</editor-fold>
 
     //<editor-fold desc="Private Methods">
