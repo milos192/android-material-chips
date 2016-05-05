@@ -235,6 +235,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
             public void onClick(View v) {
                 editText.requestFocus();
                 unselectAllChips();
+                showSuggestionsWithAnim();
             }
         });
 
@@ -245,15 +246,15 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
                     unselectAllChips();
-                    fadeOutAnim();
+                    showSuggestions();
                 } else {
-                    fadeInAnim();
+                    hideSuggestions();
                 }
             }
         });
     }
 
-    private void fadeInAnim() {
+    private void hideSuggestionsWithAnim() {
         AlphaAnimation animation = new AlphaAnimation(1, 0);
         animation.setDuration(300);
         animation.setInterpolator(new AccelerateInterpolator());
@@ -276,7 +277,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         recyclerView.startAnimation(animation);
     }
 
-    private void fadeOutAnim() {
+    private void showSuggestionsWithAnim() {
         AlphaAnimation animation = new AlphaAnimation(0, 1);
         animation.setDuration(300);
         animation.setInterpolator(new AccelerateInterpolator());
@@ -381,7 +382,11 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     }
 
     public void showSuggestions() {
-        if (recyclerView != null) recyclerView.setVisibility(VISIBLE);
+        if (recyclerView != null) showSuggestionsWithAnim();
+    }
+
+    public void hideSuggestions() {
+        if (recyclerView != null) hideSuggestionsWithAnim();
     }
     //</editor-fold>
 
