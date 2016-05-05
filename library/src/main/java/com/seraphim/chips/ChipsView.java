@@ -25,7 +25,6 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,13 +32,15 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.Spannable;
 import android.text.Spanned;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputConnectionWrapper;
@@ -242,9 +243,58 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
                     unselectAllChips();
+                    fadeOutAnim();
+                } else {
+                    fadeInAnim();
                 }
             }
         });
+    }
+
+    private void fadeInAnim() {
+        AlphaAnimation animation = new AlphaAnimation(1, 0);
+        animation.setDuration(300);
+        animation.setInterpolator(new AccelerateInterpolator());
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                recyclerView.setVisibility(GONE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        recyclerView.startAnimation(animation);
+    }
+
+    private void fadeOutAnim() {
+        AlphaAnimation animation = new AlphaAnimation(0, 1);
+        animation.setDuration(300);
+        animation.setInterpolator(new AccelerateInterpolator());
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                recyclerView.setVisibility(VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        recyclerView.startAnimation(animation);
     }
     //</editor-fold>
 
@@ -320,6 +370,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         if (recyclerView.getLayoutManager() == null)
             recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(adapter);
+        recyclerView.setVisibility(GONE);
         this.recyclerView = recyclerView;
     }
 
