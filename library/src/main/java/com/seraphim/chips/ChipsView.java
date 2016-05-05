@@ -105,6 +105,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     private List<Chip> chipList = new ArrayList<>();
     private Object currentEditTextSpan;
     private ChipValidator chipsValidator;
+    private RecyclerView recyclerView;
     private FastItemAdapter<ChipItem> adapter;
     //</editor-fold>
 
@@ -319,6 +320,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         if (recyclerView.getLayoutManager() == null)
             recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(adapter);
+        this.recyclerView = recyclerView;
     }
 
     public EditText getEditText() {
@@ -375,17 +377,6 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         editText.setText(spannable);
     }
 
-    private void onEnterPressed(String text) {
-        if (text != null && text.length() > 0) {
-//            if (isValidEmail(text)) {
-//                onEmailRecognized(text);
-//            } else {
-            Snackbar.make(chipsContainer, "Данные не корректны", Snackbar.LENGTH_SHORT).show();
-//            }
-            editText.setSelection(0);
-        }
-    }
-
     private void selectOrDeleteLastChip() {
         if (chipList.size() > 0) {
             onChipInteraction(chipList.size() - 1);
@@ -440,7 +431,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
 
     //<editor-fold desc="Inner Classes / Interfaces">
     private class EditTextListener implements TextWatcher {
-
+        private String lastFilteredSequence;
         private boolean mIsPasteTextChange = false;
 
         @Override
@@ -470,7 +461,6 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
                     }
                     s.clear();
                     if (text.length() > 1) {
-                        onEnterPressed(text); //todo rv integration
                     } else {
                         s.append(text);
                     }
@@ -478,6 +468,10 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
             }
             if (chipsListener != null) {
                 chipsListener.onTextChanged(s);
+            }
+            if (adapter != null && !s.toString().equals(lastFilteredSequence)) {
+                adapter.filter(s);
+                lastFilteredSequence = s.toString();
             }
         }
     }
