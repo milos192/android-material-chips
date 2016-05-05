@@ -27,13 +27,11 @@
             android:gravity="center"
             />
 
-        <com.makeramen.roundedimageview.RoundedImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/ri_ch_avatar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            app:riv_mutate_background="true"
-            app:riv_oval="true"
             />
 
         <ImageView

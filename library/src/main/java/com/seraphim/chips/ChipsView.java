@@ -19,6 +19,7 @@ package com.seraphim.chips;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
@@ -51,14 +52,15 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.request.target.ImageViewTarget;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.IItemAdapter;
 import com.mikepenz.fastadapter.adapters.FastItemAdapter;
 import com.mikepenz.fastadapter.items.AbstractItem;
 import com.mikepenz.fastadapter.utils.ViewHolderFactory;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -595,7 +597,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         public void bindView(ChipHolder holder) {
             super.bindView(holder);
             if (chip.avatarUri() != null)
-                Picasso.with(holder.image.getContext())
+                Glide.with(holder.image.getContext())
                         .load(chip.avatarUri())
                         .into(holder.image);
             holder.text.setText(chip.displayedName());
@@ -703,18 +705,15 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         private void updateViews() {
             textView.setText(label);
             if (photoUri != null) {
-                Picasso.with(getContext())
+                Glide.with(getContext())
                         .load(photoUri)
-                        .noPlaceholder()
-                        .into(avatarView, new Callback() {
+                        .asBitmap()
+                        .transform(new CenterCrop(getContext()))
+                        .into(new ImageViewTarget<Bitmap>(avatarView) {
                             @Override
-                            public void onSuccess() {
-                                personIcon.setVisibility(View.INVISIBLE);
-                            }
-
-                            @Override
-                            public void onError() {
-
+                            protected void setResource(Bitmap resource) {
+                                avatarView.setImageBitmap(resource);
+                                personIcon.setVisibility(INVISIBLE);
                             }
                         });
             }

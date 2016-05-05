@@ -26,8 +26,7 @@ android {
 }
 
 dependencies {
-    compile 'com.makeramen:roundedimageview:2.0.1'
-    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile('com.mikepenz:fastadapter:1.4.4@aar') {
         exclude module: 'appcompat-v7'
