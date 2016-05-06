@@ -228,7 +228,6 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     }
 
     public void addChip(ChipEntry entry, boolean isIndelible) {
-        editText.setText("");
         addLeadingMarginSpan();
         Chip chip = new Chip(entry, isIndelible);
         chipList.add(chip);
@@ -315,7 +314,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         if (currentEditTextSpan != null) {
             spannable.removeSpan(currentEditTextSpan);
         }
-        currentEditTextSpan = new android.text.style.LeadingMarginSpan.LeadingMarginSpan2.Standard(margin, 0);
+        currentEditTextSpan = new android.text.style.LeadingMarginSpan.LeadingMarginSpan2.Standard(margin + Math.round(4 * density), 0);
         spannable.setSpan(currentEditTextSpan, 0, 0, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
         editText.setText(spannable);
