@@ -16,34 +16,24 @@
 
 package com.doodle.android.chips.sample;
 
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 
 import com.seraphim.chips.ChipsView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MainActivity extends AppCompatActivity {
+    ChipsView chipsView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ChipsView chipsView = (ChipsView) findViewById(R.id.cv_contacts);
+        chipsView = (ChipsView) findViewById(R.id.cv_contacts);
 
         // change EditText config
         chipsView.getEditText().setCursorVisible(true);
 
-        chipsView.setChipsValidator(new ChipsView.ChipValidator() {
-            @Override
-            public boolean isValid(ChipsView.ChipEntry entry) {
-                return !entry.displayedName().equals("asd@qwe.de");
-            }
-        });
-        List<ChipsView.ChipEntry> chipEntries = new ArrayList<>();
+        /*List<ChipsView.ChipEntry> chipEntries = new ArrayList<>();
         chipEntries.add(new SimpleChipEntry("example 1", null));
         chipEntries.add(new SimpleChipEntry("example 2", Uri.parse("http://www.topofandroid.com/wp-content/uploads/2015/05/Android-L-Material-Design-Wallpapers-5.png")));
         chipEntries.add(new SimpleChipEntry("example 3", Uri.parse("https://appcyla.files.wordpress.com/2015/02/m1.jpg")));
@@ -51,10 +41,10 @@ public class MainActivity extends AppCompatActivity {
         chipEntries.add(new SimpleChipEntry("example 5", null));
         chipEntries.add(new SimpleChipEntry("example 6", Uri.parse("http://lifehacker.ru/wp-content/uploads/2014/11/14-14.png")));
         chipEntries.add(new SimpleChipEntry("example 7", null));
-        chipsView.setupWithRecyclerView((RecyclerView) findViewById(R.id.rv_contacts), chipEntries);
+        chipsView.setupWithRecyclerView((RecyclerView) findViewById(R.id.rv_contacts), chipEntries);*/
     }
 
-    public class SimpleChipEntry implements ChipsView.ChipEntry {
+    /*public class SimpleChipEntry implements ChipsView.ChipEntry {
         private int id = 0;
         private String email;
         private Uri imageUri;
@@ -81,5 +71,5 @@ public class MainActivity extends AppCompatActivity {
         public boolean equals(Object o) {
             return o instanceof SimpleChipEntry && ((SimpleChipEntry) o).id == id;
         }
-    }
+    }*/
 }

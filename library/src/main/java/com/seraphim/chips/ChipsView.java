@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2016 Doodle AG.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.seraphim.chips;
 
 import android.annotation.TargetApi;
@@ -27,8 +11,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Spannable;
@@ -39,9 +21,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputConnectionWrapper;
@@ -55,12 +34,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.request.target.ImageViewTarget;
-import com.mikepenz.fastadapter.FastAdapter;
-import com.mikepenz.fastadapter.IAdapter;
-import com.mikepenz.fastadapter.IItemAdapter;
-import com.mikepenz.fastadapter.adapters.FastItemAdapter;
-import com.mikepenz.fastadapter.items.AbstractItem;
-import com.mikepenz.fastadapter.utils.ViewHolderFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -108,8 +81,6 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     private List<Chip> chipList = new ArrayList<>();
     private Object currentEditTextSpan;
     private ChipValidator chipsValidator;
-    private RecyclerView recyclerView;
-    private FastItemAdapter<ChipItem> adapter;
     //</editor-fold>
 
     //<editor-fold desc="Constructors">
@@ -235,7 +206,6 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
             public void onClick(View v) {
                 editText.requestFocus();
                 unselectAllChips();
-                showSuggestionsWithAnim();
             }
         });
 
@@ -246,58 +216,9 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
                     unselectAllChips();
-                    showSuggestions();
-                } else {
-                    hideSuggestions();
                 }
             }
         });
-    }
-
-    private void hideSuggestionsWithAnim() {
-        AlphaAnimation animation = new AlphaAnimation(1, 0);
-        animation.setDuration(300);
-        animation.setInterpolator(new AccelerateInterpolator());
-        animation.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                recyclerView.setVisibility(GONE);
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-        recyclerView.startAnimation(animation);
-    }
-
-    private void showSuggestionsWithAnim() {
-        AlphaAnimation animation = new AlphaAnimation(0, 1);
-        animation.setDuration(300);
-        animation.setInterpolator(new AccelerateInterpolator());
-        animation.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                recyclerView.setVisibility(VISIBLE);
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-        recyclerView.startAnimation(animation);
     }
     //</editor-fold>
 
@@ -348,45 +269,8 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         this.chipsValidator = chipsValidator;
     }
 
-    public void setupWithRecyclerView(RecyclerView recyclerView, List<ChipEntry> resolvedChips) {
-        if (adapter == null) {
-            adapter = new FastItemAdapter<>();
-            ArrayList<ChipItem> chipItems = new ArrayList<>();
-            for (ChipEntry chip : resolvedChips) {
-                chipItems.add(new ChipItem(chip));
-            }
-            adapter.set(chipItems);
-            adapter.withFilterPredicate(new IItemAdapter.Predicate<ChipItem>() {
-                @Override
-                public boolean filter(ChipItem item, CharSequence constraint) {
-                    return !item.chip.displayedName().contains(constraint);
-                }
-            });
-            adapter.withOnClickListener(new FastAdapter.OnClickListener<ChipItem>() {
-                @Override
-                public boolean onClick(View v, IAdapter<ChipItem> adapter, ChipItem item, int position) {
-                    addChip(item.chip);
-                    return false;
-                }
-            });
-        }
-        if (recyclerView.getLayoutManager() == null)
-            recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.VERTICAL, false));
-        recyclerView.setAdapter(adapter);
-        recyclerView.setVisibility(GONE);
-        this.recyclerView = recyclerView;
-    }
-
     public EditText getEditText() {
         return editText;
-    }
-
-    public void showSuggestions() {
-        if (recyclerView != null) showSuggestionsWithAnim();
-    }
-
-    public void hideSuggestions() {
-        if (recyclerView != null) hideSuggestionsWithAnim();
     }
     //</editor-fold>
 
@@ -493,7 +377,6 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
 
     //<editor-fold desc="Inner Classes / Interfaces">
     private class EditTextListener implements TextWatcher {
-        private String lastFilteredSequence;
         private boolean mIsPasteTextChange = false;
 
         @Override
@@ -530,10 +413,6 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
             }
             if (chipsListener != null) {
                 chipsListener.onTextChanged(s);
-            }
-            if (adapter != null && !s.toString().equals(lastFilteredSequence)) {
-                adapter.filter(s);
-                lastFilteredSequence = s.toString();
             }
         }
     }
@@ -577,58 +456,6 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
             }
 
             return super.deleteSurroundingText(beforeLength, afterLength);
-        }
-    }
-
-    private class ChipItem extends AbstractItem<ChipItem, ChipHolder> {
-        private ChipEntry chip;
-        private final Factory factory = new Factory();
-
-        public ChipItem(ChipEntry chip) {
-            this.chip = chip;
-        }
-
-        @Override
-        public int getType() {
-            return R.id.chip_item;
-        }
-
-        @Override
-        public int getLayoutRes() {
-            return R.layout.material_list_item_with_avatar_1;
-        }
-
-        @Override
-        public void bindView(ChipHolder holder) {
-            super.bindView(holder);
-            if (chip.avatarUri() != null)
-                Glide.with(holder.image.getContext())
-                        .load(chip.avatarUri())
-                        .into(holder.image);
-            holder.text.setText(chip.displayedName());
-        }
-
-        @Override
-        public ViewHolderFactory<? extends ChipHolder> getFactory() {
-            return factory;
-        }
-
-        private class Factory implements ViewHolderFactory<ChipHolder> {
-            @Override
-            public ChipHolder create(View v) {
-                return new ChipHolder(v);
-            }
-        }
-    }
-
-    private class ChipHolder extends RecyclerView.ViewHolder {
-        ImageView image;
-        TextView text;
-
-        public ChipHolder(View itemView) {
-            super(itemView);
-            image = (ImageView) itemView.findViewById(R.id.preview);
-            text = (TextView) itemView.findViewById(R.id.primary_text);
         }
     }
 
