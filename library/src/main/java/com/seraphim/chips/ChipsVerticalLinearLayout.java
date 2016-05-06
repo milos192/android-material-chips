@@ -17,6 +17,7 @@
 package com.seraphim.chips;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -24,15 +25,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 class ChipsVerticalLinearLayout extends LinearLayout {
-    private List<LinearLayout> mLineLayouts = new ArrayList<>();
-    private float mDensity;
-    private int mRowSpacing;
+    private List<LinearLayout> lineLayouts = new ArrayList<>();
+    private float density;
+    private int rowSpacing;
 
     public ChipsVerticalLinearLayout(Context context, int rowSpacing) {
         super(context);
 
-        mDensity = getResources().getDisplayMetrics().density;
-        mRowSpacing = rowSpacing;
+        density = getResources().getDisplayMetrics().density;
+        this.rowSpacing = rowSpacing;
 
         init();
     }
@@ -76,23 +77,26 @@ class ChipsVerticalLinearLayout extends LinearLayout {
         if (width == 0) {
             rowCounter = 0;
         }
+        widthSum += Math.round(ll.getChildCount() * (float) 8 * density);
         return new TextLineParams(rowCounter, widthSum);
     }
 
     private LinearLayout createHorizontalView() {
         LinearLayout ll = new LinearLayout(getContext());
-        ll.setPadding(0, 0, 0, mRowSpacing);
+        ll.setPadding(0, 0, 0, rowSpacing);
         ll.setOrientation(HORIZONTAL);
+        ll.setDividerDrawable(ContextCompat.getDrawable(getContext(), R.drawable.empty_vertical_divider));
+        ll.setShowDividers(SHOW_DIVIDER_MIDDLE);
         addView(ll);
-        mLineLayouts.add(ll);
+        lineLayouts.add(ll);
         return ll;
     }
 
     private void clearChipsViews() {
-        for (LinearLayout linearLayout : mLineLayouts) {
+        for (LinearLayout linearLayout : lineLayouts) {
             linearLayout.removeAllViews();
         }
-        mLineLayouts.clear();
+        lineLayouts.clear();
         removeAllViews();
     }
 
