@@ -36,7 +36,7 @@ import com.rengwuxian.materialedittext.MaterialAutoCompleteTextView;
 import java.util.ArrayList;
 import java.util.List;
 
-class ChipsEditText extends MaterialAutoCompleteTextView {
+class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.OnItemClickListener {
     private InputConnectionWrapperInterface inputConnectionWrapperInterface;
     private ItemClickListener itemClickListener;
     private ChipsAdapter adapter;
@@ -48,18 +48,7 @@ class ChipsEditText extends MaterialAutoCompleteTextView {
         adapter = new ChipsAdapter();
         setAdapter(adapter);
         setShowClearButton(true);
-        setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                try {
-                    ChipsView.ChipEntry entry = (ChipsView.ChipEntry) parent.getItemAtPosition(position);
-                    setText("");
-                    itemClickListener.clicked(entry);
-                } catch (ClassCastException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        setOnItemClickListener(this);
     }
 
     public void addSuggestions(List<ChipsView.ChipEntry> entries) {
@@ -77,6 +66,22 @@ class ChipsEditText extends MaterialAutoCompleteTextView {
         }
 
         return super.onCreateInputConnection(outAttrs);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        try {
+            ChipsView.ChipEntry entry = (ChipsView.ChipEntry) parent.getItemAtPosition(position);
+            setText("");
+            itemClickListener.clicked(entry);
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public boolean enoughToFilter() {
+        return true;
     }
 
     public interface InputConnectionWrapperInterface {
