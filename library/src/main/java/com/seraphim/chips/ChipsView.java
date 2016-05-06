@@ -225,11 +225,11 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     //<editor-fold desc="Public Methods">
     public void addChip(ChipEntry entry) {
         addChip(entry, false);
-        editText.setText("");
-        addLeadingMarginSpan();
     }
 
     public void addChip(ChipEntry entry, boolean isIndelible) {
+        editText.setText("");
+        addLeadingMarginSpan();
         Chip chip = new Chip(entry, isIndelible);
         chipList.add(chip);
         if (chipsListener != null) {
@@ -340,7 +340,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         }
     }
 
-    private void onChipInteraction(Chip chip) {
+    private void onChipInteraction(final Chip chip) {
         unselectChipsExcept(chip);
         if (chip.isSelected()) {
             chipList.remove(chip);
@@ -350,6 +350,15 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
             onChipsChanged(true);
         } else {
             chip.setSelected(true);
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (chipList.contains(chip)) {
+                        chip.setSelected(false);
+                        onChipsChanged(false);
+                    }
+                }
+            }, 2000);
             onChipsChanged(false);
         }
     }
