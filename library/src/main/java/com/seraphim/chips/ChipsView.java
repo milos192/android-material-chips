@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ChipsView extends ScrollView implements ChipsEditText.InputConnectionWrapperInterface {
+public class ChipsView extends ScrollView implements ChipsEditText.InputConnectionWrapperInterface, ChipsEditText.ItemClickListener {
 
     //<editor-fold desc="Static Fields">
     private static final String TAG = "ChipsView";
@@ -177,7 +177,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
 
         chipsContainer.addView(linearLayout);
 
-        editText = new ChipsEditText(getContext(), this);
+        editText = new ChipsEditText(getContext(), this, this);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.topMargin = (int) (SPACING_TOP * density);
         layoutParams.bottomMargin = (int) (SPACING_BOTTOM * density) + verticalSpacing;
@@ -271,6 +271,14 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
 
     public EditText getEditText() {
         return editText;
+    }
+
+    public void addResolvedEntries(List<ChipEntry> entries) {
+        editText.addSuggestions(entries);
+    }
+
+    public void setResolvedEntries(List<ChipEntry> entries) {
+        editText.setSuggestions(entries);
     }
     //</editor-fold>
 
@@ -377,10 +385,15 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     }
     //</editor-fold>
 
-    //<editor-fold desc="InputConnectionWrapperInterface Implementation">
+    //<editor-fold desc="Listeners Implementations">
     @Override
     public InputConnection getInputConnection(InputConnection target) {
         return new KeyInterceptingInputConnection(target);
+    }
+
+    @Override
+    public void clicked(ChipEntry entry) {
+        addChip(entry);
     }
     //</editor-fold>
 

@@ -17,23 +17,63 @@
 package com.seraphim.chips;
 
 import android.content.Context;
-import android.support.v7.widget.AppCompatEditText;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-public class ChipsEditText extends AppCompatEditText {
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.rengwuxian.materialedittext.MaterialAutoCompleteTextView;
 
-    private InputConnectionWrapperInterface mInputConnectionWrapperInterface;
+import java.util.ArrayList;
+import java.util.List;
 
-    public ChipsEditText(Context context, InputConnectionWrapperInterface inputConnectionWrapperInterface) {
+class ChipsEditText extends MaterialAutoCompleteTextView {
+    private InputConnectionWrapperInterface inputConnectionWrapperInterface;
+    private ItemClickListener itemClickListener;
+    private ChipsAdapter adapter;
+
+    public ChipsEditText(Context context, InputConnectionWrapperInterface inputConnectionWrapperInterface, final ItemClickListener itemClickListener) {
         super(context);
-        this.mInputConnectionWrapperInterface = inputConnectionWrapperInterface;
+        this.inputConnectionWrapperInterface = inputConnectionWrapperInterface;
+        this.itemClickListener = itemClickListener;
+        adapter = new ChipsAdapter();
+        setAdapter(adapter);
+        setShowClearButton(true);
+        setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                try {
+                    ChipsView.ChipEntry entry = (ChipsView.ChipEntry) parent.getItemAtPosition(position);
+                    setText("");
+                    itemClickListener.clicked(entry);
+                } catch (ClassCastException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void addSuggestions(List<ChipsView.ChipEntry> entries) {
+        adapter.addSuggestions(entries);
+    }
+
+    public void setSuggestions(List<ChipsView.ChipEntry> entries) {
+        adapter.setSuggestions(entries);
     }
 
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-        if (mInputConnectionWrapperInterface != null) {
-            return mInputConnectionWrapperInterface.getInputConnection(super.onCreateInputConnection(outAttrs));
+        if (inputConnectionWrapperInterface != null) {
+            return inputConnectionWrapperInterface.getInputConnection(super.onCreateInputConnection(outAttrs));
         }
 
         return super.onCreateInputConnection(outAttrs);
@@ -41,5 +81,102 @@ public class ChipsEditText extends AppCompatEditText {
 
     public interface InputConnectionWrapperInterface {
         InputConnection getInputConnection(InputConnection target);
+    }
+
+    public interface ItemClickListener {
+        void clicked(ChipsView.ChipEntry entry);
+    }
+
+    private class ChipsAdapter extends BaseAdapter implements Filterable {
+        private List<ChipsView.ChipEntry> chipEntries;
+
+        public ChipsAdapter() {
+        }
+
+        public ChipsAdapter(List<ChipsView.ChipEntry> chipEntries) {
+            this.chipEntries = chipEntries;
+        }
+
+        public void addSuggestions(List<ChipsView.ChipEntry> entries) {
+            if (chipEntries == null) chipEntries = new ArrayList<>();
+            chipEntries.addAll(entries);
+        }
+
+        public void setSuggestions(List<ChipsView.ChipEntry> entries) {
+            chipEntries = new ArrayList<>(entries);
+        }
+
+        @Override
+        public int getCount() {
+            return chipEntries.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return chipEntries.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.material_list_item_with_avatar_1, parent, false);
+            }
+            ChipsView.ChipEntry chipEntry = chipEntries.get(position);
+            Context context = convertView.getContext();
+            if (chipEntry.avatarUri() != null) {
+                Glide.with(context)
+                        .load(chipEntry.avatarUri())
+                        .asBitmap()
+                        .transform(new CenterCrop(context))
+                        .placeholder(R.color.paper)
+                        .into((ImageView) convertView.findViewById(R.id.preview));
+            }
+            ((TextView) convertView.findViewById(R.id.primary_text)).setText(chipEntry.displayedName());
+            return convertView;
+        }
+
+        @Override
+        public Filter getFilter() {
+            return new Filter() {
+                private List<ChipsView.ChipEntry> originalEntries;
+
+                @Override
+                protected FilterResults performFiltering(CharSequence constraint) {
+                    if (originalEntries == null) originalEntries = new ArrayList<>(chipEntries);
+
+                    FilterResults filterResults = new FilterResults();
+                    if (constraint == null || constraint.length() == 0) {
+                        filterResults.values = originalEntries;
+                        filterResults.count = originalEntries.size();
+                        originalEntries = null;
+                        return filterResults;
+                    } else {
+                        List<ChipsView.ChipEntry> entries = new ArrayList<>();
+                        for (ChipsView.ChipEntry entry : originalEntries) {
+                            if (entry.displayedName().contains(constraint))
+                                entries.add(entry);
+                        }
+                        filterResults.values = entries;
+                        filterResults.count = entries.size();
+                        return filterResults;
+                    }
+                }
+
+                @Override
+                protected void publishResults(CharSequence constraint, FilterResults results) {
+                    if (results != null && results.count > 0) {
+                        chipEntries = (List<ChipsView.ChipEntry>) results.values;
+                        notifyDataSetChanged();
+                    } else {
+                        notifyDataSetInvalidated();
+                    }
+                }
+            };
+        }
     }
 }

@@ -16,10 +16,15 @@
 
 package com.doodle.android.chips.sample;
 
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import com.seraphim.chips.ChipsView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     ChipsView chipsView;
@@ -33,18 +38,18 @@ public class MainActivity extends AppCompatActivity {
         // change EditText config
         chipsView.getEditText().setCursorVisible(true);
 
-        /*List<ChipsView.ChipEntry> chipEntries = new ArrayList<>();
-        chipEntries.add(new SimpleChipEntry("example 1", null));
-        chipEntries.add(new SimpleChipEntry("example 2", Uri.parse("http://www.topofandroid.com/wp-content/uploads/2015/05/Android-L-Material-Design-Wallpapers-5.png")));
-        chipEntries.add(new SimpleChipEntry("example 3", Uri.parse("https://appcyla.files.wordpress.com/2015/02/m1.jpg")));
-        chipEntries.add(new SimpleChipEntry("example 4", Uri.parse("http://geekhounds.com/wp-content/uploads/2014/11/unnamed.jpg")));
-        chipEntries.add(new SimpleChipEntry("example 5", null));
-        chipEntries.add(new SimpleChipEntry("example 6", Uri.parse("http://lifehacker.ru/wp-content/uploads/2014/11/14-14.png")));
-        chipEntries.add(new SimpleChipEntry("example 7", null));
-        chipsView.setupWithRecyclerView((RecyclerView) findViewById(R.id.rv_contacts), chipEntries);*/
+        final List<ChipsView.ChipEntry> entries = new ArrayList<>();
+        entries.add(new SimpleChipEntry("example 1", null));
+        entries.add(new SimpleChipEntry("example 2", Uri.parse("http://www.topofandroid.com/wp-content/uploads/2015/05/Android-L-Material-Design-Wallpapers-5.png")));
+        entries.add(new SimpleChipEntry("example 3", Uri.parse("https://appcyla.files.wordpress.com/2015/02/m1.jpg")));
+        entries.add(new SimpleChipEntry("example 4", Uri.parse("http://geekhounds.com/wp-content/uploads/2014/11/unnamed.jpg")));
+        entries.add(new SimpleChipEntry("example 5", null));
+        entries.add(new SimpleChipEntry("example 6", Uri.parse("http://lifehacker.ru/wp-content/uploads/2014/11/14-14.png")));
+        entries.add(new SimpleChipEntry("example 7", null));
+        chipsView.setResolvedEntries(entries);
     }
 
-    /*public class SimpleChipEntry implements ChipsView.ChipEntry {
+    public class SimpleChipEntry implements ChipsView.ChipEntry {
         private int id = 0;
         private String email;
         private Uri imageUri;
@@ -71,5 +76,5 @@ public class MainActivity extends AppCompatActivity {
         public boolean equals(Object o) {
             return o instanceof SimpleChipEntry && ((SimpleChipEntry) o).id == id;
         }
-    }*/
+    }
 }

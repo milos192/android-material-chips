@@ -23,10 +23,8 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChipsVerticalLinearLayout extends LinearLayout {
-
+class ChipsVerticalLinearLayout extends LinearLayout {
     private List<LinearLayout> mLineLayouts = new ArrayList<>();
-
     private float mDensity;
     private int mRowSpacing;
 

@@ -4,16 +4,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/paper"
     android:orientation="vertical"
-    android:background="@color/paper">
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
+        android:background="@color/paper"
         android:elevation="6dp"
         android:orientation="horizontal"
-        android:background="@color/paper"
+        android:paddingLeft="16dp"
         >
 
         <TextView
@@ -52,9 +53,4 @@
             -->
 
     </LinearLayout>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_contacts"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
 </LinearLayout>
