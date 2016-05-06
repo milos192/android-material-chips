@@ -41,7 +41,6 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
     private InputConnectionWrapperInterface inputConnectionWrapperInterface;
     private ItemClickListener itemClickListener;
     private ChipsAdapter adapter;
-    private LeadingMarginSpan.LeadingMarginSpan2.Standard marginSpan;
 
     public ChipsEditText(Context context, InputConnectionWrapperInterface inputConnectionWrapperInterface, final ItemClickListener itemClickListener) {
         super(context);
