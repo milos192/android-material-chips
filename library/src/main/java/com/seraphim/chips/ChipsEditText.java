@@ -17,7 +17,21 @@
 package com.seraphim.chips;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.VectorDrawable;
+import android.support.graphics.drawable.VectorDrawableCompat;
+import android.support.v4.content.ContextCompat;
+import android.text.Editable;
+import android.text.Spanned;
+import android.text.TextWatcher;
 import android.text.style.LeadingMarginSpan;
+import android.text.style.StyleSpan;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +65,22 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
         setShowClearButton(true);
         setOnItemClickListener(this);
         setThreshold(1);
+        addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                Log.d("Chips", "Before " + s);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.d("Chips", "Changed " + s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Log.d("Chips", "After " + s);
+            }
+        });
     }
 
     public void addSuggestions(List<ChipsView.ChipEntry> entries) {
@@ -136,13 +166,19 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
             }
             ChipsView.ChipEntry chipEntry = currentEntries.get(position);
             Context context = convertView.getContext();
+            ImageView imageView = (ImageView) convertView.findViewById(R.id.preview);
             if (chipEntry.avatarUri() != null) {
                 Glide.with(context)
                         .load(chipEntry.avatarUri())
                         .asBitmap()
                         .transform(new CenterCrop(context))
                         .placeholder(R.color.paper)
-                        .into((ImageView) convertView.findViewById(R.id.preview));
+                        .into(imageView);
+            } else {
+                Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_person_24dp);
+                drawable.setAlpha(150);
+                imageView.setImageDrawable(drawable);
+                imageView.setPadding(8, 8, 8, 8);
             }
             ((TextView) convertView.findViewById(R.id.primary_text)).setText(chipEntry.displayedName());
             return convertView;
@@ -155,6 +191,7 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
 
                 @Override
                 protected FilterResults performFiltering(CharSequence constraint) {
+                    Log.d("Chips", "Filter " + constraint);
                     FilterResults filterResults = new FilterResults();
                     if (constraint != null && !constraint.toString().equals(lastFiltered) && constraint.length() != 0) {
                         List<ChipsView.ChipEntry> entries = new ArrayList<>();
