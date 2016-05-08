@@ -13,7 +13,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.InputType;
-import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -631,24 +630,6 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
                     + "}"
                     ;
         }
-    }
-
-    public interface ChipsListener {
-        void onChipAdded(Chip chip);
-
-        void onChipDeleted(Chip chip);
-
-        void onTextChanged(CharSequence text);
-    }
-
-    public static abstract class ChipValidator {
-        public abstract boolean isValid(ChipEntry entry);
-    }
-
-    public interface ChipEntry {
-        String displayedName();
-
-        Uri avatarUri();
     }
     //</editor-fold>
 }

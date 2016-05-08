@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import com.seraphim.chips.ChipEntry;
 import com.seraphim.chips.ChipsView;
 
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         // change EditText config
         chipsView.getEditText().setCursorVisible(true);
 
-        final List<ChipsView.ChipEntry> entries = new ArrayList<>();
+        final List<ChipEntry> entries = new ArrayList<>();
         entries.add(new SimpleChipEntry("example 1", null));
         entries.add(new SimpleChipEntry("example 2", Uri.parse("http://www.topofandroid.com/wp-content/uploads/2015/05/Android-L-Material-Design-Wallpapers-5.png")));
         entries.add(new SimpleChipEntry("example 3", Uri.parse("https://appcyla.files.wordpress.com/2015/02/m1.jpg")));
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         chipsView.setResolvedEntries(entries);
     }
 
-    public class SimpleChipEntry implements ChipsView.ChipEntry {
+    public class SimpleChipEntry implements ChipEntry {
         private int id = 0;
         private String email;
         private Uri imageUri;

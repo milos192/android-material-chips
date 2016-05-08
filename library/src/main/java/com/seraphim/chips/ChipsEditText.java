@@ -17,21 +17,11 @@
 package com.seraphim.chips;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.PorterDuff;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.VectorDrawable;
-import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
-import android.text.Spanned;
 import android.text.TextWatcher;
-import android.text.style.LeadingMarginSpan;
-import android.text.style.StyleSpan;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,11 +73,11 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
         });
     }
 
-    public void addSuggestions(List<ChipsView.ChipEntry> entries) {
+    public void addSuggestions(List<ChipEntry> entries) {
         adapter.addSuggestions(entries);
     }
 
-    public void setSuggestions(List<ChipsView.ChipEntry> entries) {
+    public void setSuggestions(List<ChipEntry> entries) {
         adapter.setSuggestions(entries);
     }
 
@@ -103,7 +93,7 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         try {
-            ChipsView.ChipEntry entry = (ChipsView.ChipEntry) parent.getItemAtPosition(position);
+            ChipEntry entry = (ChipEntry) parent.getItemAtPosition(position);
             setText("");
             itemClickListener.clicked(entry);
         } catch (ClassCastException e) {
@@ -121,24 +111,24 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
     }
 
     public interface ItemClickListener {
-        void clicked(ChipsView.ChipEntry entry);
+        void clicked(ChipEntry entry);
     }
 
     private class ChipsAdapter extends BaseAdapter implements Filterable {
-        private final List<ChipsView.ChipEntry> originalEntries;
-        private List<ChipsView.ChipEntry> currentEntries;
+        private final List<ChipEntry> originalEntries;
+        private List<ChipEntry> currentEntries;
 
         public ChipsAdapter() {
             originalEntries = new ArrayList<>();
         }
 
-        public void addSuggestions(List<ChipsView.ChipEntry> entries) {
+        public void addSuggestions(List<ChipEntry> entries) {
             if (currentEntries == null) currentEntries = new ArrayList<>();
             currentEntries.addAll(entries);
             originalEntries.addAll(entries);
         }
 
-        public void setSuggestions(List<ChipsView.ChipEntry> entries) {
+        public void setSuggestions(List<ChipEntry> entries) {
             currentEntries = new ArrayList<>(entries);
             originalEntries.clear();
             originalEntries.addAll(entries);
@@ -164,7 +154,7 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
             if (convertView == null) {
                 convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.material_list_item_with_avatar_1, parent, false);
             }
-            ChipsView.ChipEntry chipEntry = currentEntries.get(position);
+            ChipEntry chipEntry = currentEntries.get(position);
             Context context = convertView.getContext();
             ImageView imageView = (ImageView) convertView.findViewById(R.id.preview);
             if (chipEntry.avatarUri() != null) {
@@ -194,8 +184,8 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
                     Log.d("Chips", "Filter " + constraint);
                     FilterResults filterResults = new FilterResults();
                     if (constraint != null && !constraint.toString().equals(lastFiltered) && constraint.length() != 0) {
-                        List<ChipsView.ChipEntry> entries = new ArrayList<>();
-                        for (ChipsView.ChipEntry entry : originalEntries) {
+                        List<ChipEntry> entries = new ArrayList<>();
+                        for (ChipEntry entry : originalEntries) {
                             if (entry.displayedName().contains(constraint))
                                 entries.add(entry);
                         }
@@ -214,7 +204,7 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
                 @Override
                 protected void publishResults(CharSequence constraint, FilterResults results) {
                     if (results != null && results.count > 0) {
-                        currentEntries = (List<ChipsView.ChipEntry>) results.values;
+                        currentEntries = (List<ChipEntry>) results.values;
                         notifyDataSetChanged();
                     } else {
                         notifyDataSetInvalidated();
