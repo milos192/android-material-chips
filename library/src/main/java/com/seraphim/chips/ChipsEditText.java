@@ -22,13 +22,17 @@ import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -52,25 +56,8 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
         this.itemClickListener = itemClickListener;
         adapter = new ChipsAdapter();
         setAdapter(adapter);
-        setShowClearButton(true);
         setOnItemClickListener(this);
         setThreshold(1);
-        addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                Log.d("Chips", "Before " + s);
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.d("Chips", "Changed " + s);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                Log.d("Chips", "After " + s);
-            }
-        });
     }
 
     public void addSuggestions(List<ChipEntry> entries) {
@@ -116,22 +103,22 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
 
     private class ChipsAdapter extends BaseAdapter implements Filterable {
         private final List<ChipEntry> suggestions;
-        private List<ChipEntry> currentEntries;
+        private final List<ChipEntry> currentEntries;
 
         public ChipsAdapter() {
             suggestions = new ArrayList<>();
+            currentEntries = new ArrayList<>();
         }
 
         public void addSuggestions(List<ChipEntry> entries) {
-            if (currentEntries == null) currentEntries = new ArrayList<>();
-            currentEntries.addAll(entries);
             suggestions.addAll(entries);
+            notifyDataSetChanged();
         }
 
         public void setSuggestions(List<ChipEntry> entries) {
-            currentEntries = new ArrayList<>(entries);
             suggestions.clear();
             suggestions.addAll(entries);
+            notifyDataSetChanged();
         }
 
         @Override
@@ -181,7 +168,6 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
 
                 @Override
                 protected FilterResults performFiltering(CharSequence constraint) {
-                    Log.d("Chips", "Filter " + constraint);
                     FilterResults filterResults = new FilterResults();
                     if (constraint != null && !constraint.toString().equals(lastFiltered) && constraint.length() != 0) {
                         List<ChipEntry> entries = new ArrayList<>();
@@ -204,7 +190,7 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
                 @Override
                 protected void publishResults(CharSequence constraint, FilterResults results) {
                     if (results != null && results.count > 0) {
-                        currentEntries = (List<ChipEntry>) results.values;
+                        currentEntries.addAll((List<ChipEntry>) results.values);
                         notifyDataSetChanged();
                     } else {
                         notifyDataSetInvalidated();

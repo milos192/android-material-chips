@@ -35,9 +35,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         chipsView = (ChipsView) findViewById(R.id.cv_contacts);
-
-        // change EditText config
-        chipsView.getEditText().setCursorVisible(true);
+        chipsView.setMode(ChipsView.Mode.ONLY_SUGGESTIONS);
 
         final List<ChipEntry> entries = new ArrayList<>();
         entries.add(new SimpleChipEntry("example 1", null));

@@ -24,12 +24,14 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputConnectionWrapper;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
@@ -39,7 +41,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ChipsView extends ScrollView implements ChipsEditText.InputConnectionWrapperInterface, ChipsEditText.ItemClickListener {
+public class ChipsView extends ScrollView implements ChipsEditText.InputConnectionWrapperInterface, ChipsEditText.ItemClickListener, TextView.OnEditorActionListener {
 
     //<editor-fold desc="Static Fields">
     private static final String TAG = "ChipsView";
@@ -81,6 +83,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     private List<Chip> chipList = new ArrayList<>();
     private Object currentEditTextSpan;
     private ChipValidator chipsValidator;
+    private Mode mode = Mode.ALL;
     //</editor-fold>
 
     //<editor-fold desc="Constructors">
@@ -178,16 +181,18 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         chipsContainer.addView(linearLayout);
 
         editText = new ChipsEditText(getContext(), this, this);
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.topMargin = (int) (SPACING_TOP * density);
-        layoutParams.bottomMargin = (int) (SPACING_BOTTOM * density) + verticalSpacing;
-        editText.setLayoutParams(layoutParams);
+        RelativeLayout.LayoutParams editTextParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        editTextParams.topMargin = (int) (SPACING_TOP * density);
+        editTextParams.bottomMargin = (int) (SPACING_BOTTOM * density) + verticalSpacing;
+        editText.setLayoutParams(editTextParams);
         editText.setMinHeight((int) (CHIP_HEIGHT * density));
-        editText.setPadding(0, 0, 0, 0);
+        editText.setPaddings(0, 0, 0, 0);
         editText.setLineSpacing(verticalSpacing, (CHIP_HEIGHT * density) / editText.getLineHeight());
         editText.setBackgroundColor(Color.argb(0, 0, 0, 0));
-        editText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI | EditorInfo.IME_ACTION_UNSPECIFIED);
-        editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        editText.setHideUnderline(true);
+        editText.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+        editText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        editText.setOnEditorActionListener(this);
 
         chipsContainer.addView(editText);
 
@@ -267,16 +272,16 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         this.chipsValidator = chipsValidator;
     }
 
-    public EditText getEditText() {
-        return editText;
-    }
-
     public void addSuggestions(List<ChipEntry> entries) {
         editText.addSuggestions(entries);
     }
 
     public void setSuggestions(List<ChipEntry> entries) {
         editText.setSuggestions(entries);
+    }
+
+    public void setMode(Mode mode) {
+        this.mode = mode;
     }
     //</editor-fold>
 
@@ -385,6 +390,17 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     public void clicked(ChipEntry entry) {
         addChip(entry);
     }
+
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        if (mode == Mode.ALL && !editText.getText().toString().isEmpty() && actionId == EditorInfo.IME_ACTION_DONE) {
+            SimpleChipEntry entry = new SimpleChipEntry(editText.getText().toString(), null);
+            editText.setText("");
+            addChip(entry);
+            return true;
+        }
+        return false;
+    }
     //</editor-fold>
 
     //<editor-fold desc="Inner Classes / Interfaces">
@@ -442,15 +458,15 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
 
         @Override
         public boolean sendKeyEvent(KeyEvent event) {
+            Log.d("Key", "action: " + event.getAction() + ", code: " + event.getKeyCode());
             if (editText.length() == 0) {
-                if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                    if (event.getKeyCode() == KeyEvent.KEYCODE_DEL) {
-                        selectOrDeleteLastChip();
-                        return true;
-                    }
+                if (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_DEL) {
+                    selectOrDeleteLastChip();
+                    return true;
                 }
             }
             if (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                Log.d(TAG, "Enter: " + editText.getText().toString());
                 editText.append("\n");
                 return true;
             }
@@ -631,6 +647,10 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
                     + "}"
                     ;
         }
+    }
+
+    public enum Mode {
+        ONLY_SUGGESTIONS, ALL
     }
     //</editor-fold>
 }
