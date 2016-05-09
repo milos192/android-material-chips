@@ -18,15 +18,12 @@ A different approach to implement android material chips since using transformed
 </p>
 
 **Customize your layout and text**
-
-##Sample
-**APK:** [sample-apk-1.0.1](https://github.com/DoodleScheduling/android-material-chips/releases/download/1.0.1/android-material-chips-1.0.1-sample.apk)
  
 ##Download
 
 **Gradle:** 
 
-via [jCenter](https://bintray.com/doodlescheduling/com.doodle/doodle-android-chips)
+via [jCenter](https://bintray.com/furiousseraphim/chips/materialchips/)
 ```gradle
 buildscript {
     repositories {
@@ -35,18 +32,7 @@ buildscript {
 }
 
 dependencies {
-    compile 'com.doodle.android:android-material-chips:1.1.0'
-}
-```
-
-via [JitPack.io](https://jitpack.io/#DoodleScheduling/android-material-chips)
-```gradle
-repositories {
-    maven { url "https://jitpack.io" }
-}
-
-dependencies {
-    compile 'com.github.DoodleScheduling:android-material-chips:1.1.0'
+    compile 'com.furiousseraphim.chips:material-chips:1.2.0''
 }
 ```
 
@@ -116,22 +102,47 @@ The ChipsView provides a listener to interact with your data.
 });
 ```
 
+**Entry**
+Implement ChipEntry
+```java
+public class MyChipEntry implements ChipEntry {
+    private String name;
+    private Uri imageUri;
+
+    public SimpleChipEntry(String name, @Nullable Uri imageUri) {
+        this.name = name;
+        this.imageUri = imageUri;
+    }
+
+    @Override
+    public String displayedName() {
+        return name;
+    }
+
+    @Override
+    public Uri avatarUri() {
+        return imageUri;
+    }
+}
+```
+or use buit-in `SimpleChipEntry`
+
 **Add a new chip**
 
 ```java
-сhipsView.addChip(email, imgUrl, contact);
+сhipsView.addChip(yourEntry);
 ```
 
 **Add a non-removable chip.**
 
 ```java
-сhipsView.addChip(email, imgUrl, contact, true);
+сhipsView.addChip(yourEntry, true);
 ```
 
 **Remove a chip**
 
 ```java
-сhipsView.removeChipBy(contact);
+сhipsView.removeChipBy(entry);
 ```
 
 **Add Custom chip validator**
