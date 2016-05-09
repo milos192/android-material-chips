@@ -10,13 +10,6 @@ A different approach to implement android material chips since using transformed
 <img src="./images/dc2.png" title="MaterialChips2" width="40%" />
 </p>
 
-**Email validation dialog**
-
-<p>
-<img src="./images/dc3.png" title="MaterialChips3" width="40%" />
-<img src="./images/dc4.png" title="MaterialChips4" width="40%" />
-</p>
-
 **Customize your layout and text**
  
 ##Download
@@ -103,6 +96,7 @@ The ChipsView provides a listener to interact with your data.
 ```
 
 **Entry**
+
 Implement ChipEntry
 ```java
 public class MyChipEntry implements ChipEntry {
@@ -126,6 +120,7 @@ public class MyChipEntry implements ChipEntry {
 }
 ```
 or use buit-in `SimpleChipEntry`
+
 
 **Add a new chip**
 
