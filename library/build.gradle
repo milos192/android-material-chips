@@ -3,7 +3,7 @@ apply plugin: 'com.android.library'
 ext {
     PUBLISH_GROUP_ID = 'com.furiousseraphim.chips'
     PUBLISH_ARTIFACT_ID = 'material-chips'
-    PUBLISH_VERSION = '1.1.0'
+    PUBLISH_VERSION = '1.2.0'
 }
 
 android {
@@ -13,9 +13,9 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 110
-        versionName "1.1.0"
-        setProperty("archivesBaseName", "android-material-chips-$versionName")
+        versionCode 120
+        versionName "1.2.0"
+        setProperty("archivesBaseName", "material-chips-$versionName")
     }
     buildTypes {
         release {
