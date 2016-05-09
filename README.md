@@ -103,7 +103,7 @@ public class MyChipEntry implements ChipEntry {
     private String name;
     private Uri imageUri;
 
-    public SimpleChipEntry(String name, @Nullable Uri imageUri) {
+    public MyChipEntry(String name, @Nullable Uri imageUri) {
         this.name = name;
         this.imageUri = imageUri;
     }
@@ -149,6 +149,27 @@ or use buit-in [SimpleChipEntry](https://github.com/FuriousSeraphim/android-mate
         return true;
     }
 });
+```
+
+**Add or set Suggestions**
+
+```java
+final List<ChipEntry> entries = new ArrayList<>();
+// fill list
+chipsView.setSuggestions(entries);
+// or
+chipsView.addSuggestions(entries);
+```
+
+**Set mode**
+
+Only entries from suggestions list can be chips
+```java
+chipsView.setMode(ChipsView.Mode.ONLY_SUGGESTIONS);
+```
+or any inputted text can be chip(ability to set custom factory implementation coming soon)
+```java
+chipsView.setMode(ChipsView.Mode.ALL); // default
 ```
 
 <p>
