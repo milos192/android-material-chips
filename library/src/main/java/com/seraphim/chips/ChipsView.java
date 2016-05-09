@@ -397,9 +397,8 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
             SimpleChipEntry entry = new SimpleChipEntry(editText.getText().toString(), null);
             editText.setText("");
             addChip(entry);
-            return true;
         }
-        return false;
+        return true;
     }
     //</editor-fold>
 

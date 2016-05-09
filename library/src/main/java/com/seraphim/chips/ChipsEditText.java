@@ -190,6 +190,7 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
                 @Override
                 protected void publishResults(CharSequence constraint, FilterResults results) {
                     if (results != null && results.count > 0) {
+                        currentEntries.clear();
                         currentEntries.addAll((List<ChipEntry>) results.values);
                         notifyDataSetChanged();
                     } else {
