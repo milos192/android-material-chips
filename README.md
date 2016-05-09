@@ -25,7 +25,7 @@ buildscript {
 }
 
 dependencies {
-    compile 'com.furiousseraphim.chips:material-chips:1.2.0''
+    compile 'com.furiousseraphim.chips:material-chips:1.2.0'
 }
 ```
 
@@ -119,7 +119,7 @@ public class MyChipEntry implements ChipEntry {
     }
 }
 ```
-or use buit-in `SimpleChipEntry`
+or use buit-in [SimpleChipEntry](https://github.com/FuriousSeraphim/android-material-chips/blob/master/library/src/main/java/com/seraphim/chips/SimpleChipEntry.java)
 
 
 **Add a new chip**
@@ -156,9 +156,6 @@ or use buit-in `SimpleChipEntry`
 </p>
 
 ## License
-
-    Copyright (C) 2016 Doodle AG.
- 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
