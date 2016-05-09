@@ -145,7 +145,7 @@ or use buit-in [SimpleChipEntry](https://github.com/FuriousSeraphim/android-mate
 ```java
 сhipsView.setChipsValidator(new ChipsView.ChipValidator() {
     @Override
-    public boolean isValid(Contact contact) {
+    public boolean isValid(ChipEntry entry) {
         return true;
     }
 });
@@ -177,6 +177,9 @@ chipsView.setMode(ChipsView.Mode.ALL); // default
 </p>
 
 ## License
+    Copyright (C) 2016 Doodle AG.
+    Copyright 2016 FuriousSeraphim.
+
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
