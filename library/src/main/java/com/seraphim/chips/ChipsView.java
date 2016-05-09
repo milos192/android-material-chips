@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.InputType;
@@ -270,11 +271,11 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         return editText;
     }
 
-    public void addResolvedEntries(List<ChipEntry> entries) {
+    public void addSuggestions(List<ChipEntry> entries) {
         editText.addSuggestions(entries);
     }
 
-    public void setResolvedEntries(List<ChipEntry> entries) {
+    public void setSuggestions(List<ChipEntry> entries) {
         editText.setSuggestions(entries);
     }
     //</editor-fold>

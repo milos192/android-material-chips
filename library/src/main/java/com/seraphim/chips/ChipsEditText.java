@@ -115,23 +115,23 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
     }
 
     private class ChipsAdapter extends BaseAdapter implements Filterable {
-        private final List<ChipEntry> originalEntries;
+        private final List<ChipEntry> suggestions;
         private List<ChipEntry> currentEntries;
 
         public ChipsAdapter() {
-            originalEntries = new ArrayList<>();
+            suggestions = new ArrayList<>();
         }
 
         public void addSuggestions(List<ChipEntry> entries) {
             if (currentEntries == null) currentEntries = new ArrayList<>();
             currentEntries.addAll(entries);
-            originalEntries.addAll(entries);
+            suggestions.addAll(entries);
         }
 
         public void setSuggestions(List<ChipEntry> entries) {
             currentEntries = new ArrayList<>(entries);
-            originalEntries.clear();
-            originalEntries.addAll(entries);
+            suggestions.clear();
+            suggestions.addAll(entries);
         }
 
         @Override
@@ -185,7 +185,7 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
                     FilterResults filterResults = new FilterResults();
                     if (constraint != null && !constraint.toString().equals(lastFiltered) && constraint.length() != 0) {
                         List<ChipEntry> entries = new ArrayList<>();
-                        for (ChipEntry entry : originalEntries) {
+                        for (ChipEntry entry : suggestions) {
                             if (entry.displayedName().contains(constraint))
                                 entries.add(entry);
                         }
@@ -193,8 +193,8 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
                         filterResults.count = entries.size();
                         lastFiltered = constraint.toString();
                     } else {
-                        filterResults.values = originalEntries;
-                        filterResults.count = originalEntries.size();
+                        filterResults.values = suggestions;
+                        filterResults.count = suggestions.size();
                         if (constraint != null) lastFiltered = constraint.toString();
                         else lastFiltered = null;
                     }

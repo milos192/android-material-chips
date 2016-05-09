@@ -18,11 +18,11 @@ package com.doodle.android.chips.sample;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import com.seraphim.chips.ChipEntry;
 import com.seraphim.chips.ChipsView;
+import com.seraphim.chips.SimpleChipEntry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,35 +47,6 @@ public class MainActivity extends AppCompatActivity {
         entries.add(new SimpleChipEntry("example 5", null));
         entries.add(new SimpleChipEntry("example 6", Uri.parse("http://lifehacker.ru/wp-content/uploads/2014/11/14-14.png")));
         entries.add(new SimpleChipEntry("example 7", null));
-        chipsView.setResolvedEntries(entries);
-    }
-
-    public class SimpleChipEntry implements ChipEntry {
-        private int id = 0;
-        private String email;
-        private Uri imageUri;
-
-        public SimpleChipEntry(String email, @Nullable Uri imageUri) {
-            this.email = email;
-            this.imageUri = imageUri;
-
-            id += email.hashCode();
-            if (imageUri != null) id += imageUri.hashCode();
-        }
-
-        @Override
-        public String displayedName() {
-            return email;
-        }
-
-        @Override
-        public Uri avatarUri() {
-            return imageUri;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            return o instanceof SimpleChipEntry && ((SimpleChipEntry) o).id == id;
-        }
+        chipsView.setSuggestions(entries);
     }
 }
