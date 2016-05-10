@@ -10,23 +10,13 @@ A different approach to implement android material chips since using transformed
 <img src="./images/dc2.png" title="MaterialChips2" width="40%" />
 </p>
 
-**Email validation dialog**
-
-<p>
-<img src="./images/dc3.png" title="MaterialChips3" width="40%" />
-<img src="./images/dc4.png" title="MaterialChips4" width="40%" />
-</p>
-
 **Customize your layout and text**
-
-##Sample
-**APK:** [sample-apk-1.0.1](https://github.com/DoodleScheduling/android-material-chips/releases/download/1.0.1/android-material-chips-1.0.1-sample.apk)
  
 ##Download
 
 **Gradle:** 
 
-via [jCenter](https://bintray.com/doodlescheduling/com.doodle/doodle-android-chips)
+via [jCenter](https://bintray.com/furiousseraphim/chips/materialchips/)
 ```gradle
 buildscript {
     repositories {
@@ -35,18 +25,7 @@ buildscript {
 }
 
 dependencies {
-    compile 'com.doodle.android:android-material-chips:1.1.0'
-}
-```
-
-via [JitPack.io](https://jitpack.io/#DoodleScheduling/android-material-chips)
-```gradle
-repositories {
-    maven { url "https://jitpack.io" }
-}
-
-dependencies {
-    compile 'com.github.DoodleScheduling:android-material-chips:1.1.0'
+    compile 'com.furiousseraphim.chips:material-chips:1.2.0'
 }
 ```
 
@@ -116,22 +95,49 @@ The ChipsView provides a listener to interact with your data.
 });
 ```
 
+**Entry**
+
+Implement ChipEntry
+```java
+public class MyChipEntry implements ChipEntry {
+    private String name;
+    private Uri imageUri;
+
+    public MyChipEntry(String name, @Nullable Uri imageUri) {
+        this.name = name;
+        this.imageUri = imageUri;
+    }
+
+    @Override
+    public String displayedName() {
+        return name;
+    }
+
+    @Override
+    public Uri avatarUri() {
+        return imageUri;
+    }
+}
+```
+or use buit-in [SimpleChipEntry](https://github.com/FuriousSeraphim/android-material-chips/blob/master/library/src/main/java/com/seraphim/chips/SimpleChipEntry.java)
+
+
 **Add a new chip**
 
 ```java
-сhipsView.addChip(email, imgUrl, contact);
+сhipsView.addChip(yourEntry);
 ```
 
 **Add a non-removable chip.**
 
 ```java
-сhipsView.addChip(email, imgUrl, contact, true);
+сhipsView.addChip(yourEntry, true);
 ```
 
 **Remove a chip**
 
 ```java
-сhipsView.removeChipBy(contact);
+сhipsView.removeChipBy(entry);
 ```
 
 **Add Custom chip validator**
@@ -139,10 +145,31 @@ The ChipsView provides a listener to interact with your data.
 ```java
 сhipsView.setChipsValidator(new ChipsView.ChipValidator() {
     @Override
-    public boolean isValid(Contact contact) {
+    public boolean isValid(ChipEntry entry) {
         return true;
     }
 });
+```
+
+**Add or set Suggestions**
+
+```java
+final List<ChipEntry> entries = new ArrayList<>();
+// fill list
+chipsView.setSuggestions(entries);
+// or
+chipsView.addSuggestions(entries);
+```
+
+**Set mode**
+
+Only entries from suggestions list can be chips
+```java
+chipsView.setMode(ChipsView.Mode.ONLY_SUGGESTIONS);
+```
+or any inputted text can be chip(ability to set custom factory implementation coming soon)
+```java
+chipsView.setMode(ChipsView.Mode.ALL); // default
 ```
 
 <p>
@@ -150,9 +177,9 @@ The ChipsView provides a listener to interact with your data.
 </p>
 
 ## License
-
     Copyright (C) 2016 Doodle AG.
- 
+    Copyright 2016 FuriousSeraphim.
+
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
