@@ -4,16 +4,17 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 
 public class SimpleChipEntry implements ChipEntry {
-    private int id = 0;
     private String name;
     private Uri imageUri;
 
     public SimpleChipEntry(String name, @Nullable Uri imageUri) {
         this.name = name;
         this.imageUri = imageUri;
+    }
 
-        id += name.hashCode();
-        if (imageUri != null) id += imageUri.hashCode();
+    public SimpleChipEntry(String name, @Nullable String imageUrl) {
+        this.name = name;
+        imageUri = Uri.parse(imageUrl);
     }
 
     @Override
@@ -24,10 +25,5 @@ public class SimpleChipEntry implements ChipEntry {
     @Override
     public Uri avatarUri() {
         return imageUri;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return o instanceof SimpleChipEntry && ((SimpleChipEntry) o).id == id;
     }
 }
