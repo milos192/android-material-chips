@@ -165,7 +165,7 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
                     if (constraint != null && !constraint.toString().equals(lastFiltered) && constraint.length() != 0) {
                         List<ChipEntry> entries = new ArrayList<>();
                         for (ChipEntry entry : suggestions) {
-                            if (entry.displayedName().contains(constraint))
+                            if (entry.displayedName().toLowerCase().contains(constraint.toString().toLowerCase()))
                                 entries.add(entry);
                         }
                         filterResults.values = entries;
