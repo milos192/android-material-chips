@@ -7,9 +7,8 @@ public class SimpleChipEntry implements ChipEntry {
     private String name;
     private Uri imageUri;
 
-    public SimpleChipEntry(String name, @Nullable Uri imageUri) {
+    public SimpleChipEntry(String name) {
         this.name = name;
-        this.imageUri = imageUri;
     }
 
     public SimpleChipEntry(String name, @Nullable String imageUrl) {
