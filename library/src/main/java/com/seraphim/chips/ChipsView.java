@@ -80,6 +80,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     private Object currentEditTextSpan;
     private ChipValidator chipsValidator;
     private Mode mode = Mode.ALL;
+    private ChipsFactory factory;
     //</editor-fold>
 
     //<editor-fold desc="Constructors">
@@ -198,6 +199,8 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         rootChipsLayout.setPadding(0, (int) (SPACING_TOP * density), 0, 0);
         chipsContainer.addView(rootChipsLayout);
 
+        factory = new DefaultFactory();
+
         initListener();
     }
 
@@ -283,6 +286,11 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     public void setMode(Mode mode) {
         this.mode = mode;
     }
+
+    public void setFactory(ChipsFactory factory) {
+        this.factory = factory;
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="Private Methods">
@@ -394,7 +402,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         if (mode == Mode.ALL && !editText.getText().toString().isEmpty() && actionId == EditorInfo.IME_ACTION_DONE) {
-            SimpleChipEntry entry = new SimpleChipEntry(editText.getText().toString(), null);
+            ChipEntry entry = factory.createChip(editText.getText().toString());
             editText.setText("");
             addChip(entry);
         }
@@ -650,6 +658,13 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
 
     public enum Mode {
         ONLY_SUGGESTIONS, ALL
+    }
+
+    private class DefaultFactory implements ChipsFactory {
+        @Override
+        public ChipEntry createChip(String text) {
+            return new SimpleChipEntry(text, null);
+        }
     }
     //</editor-fold>
 }

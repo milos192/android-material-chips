@@ -5,11 +5,13 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.seraphim.chips.ChipEntry;
 import com.seraphim.chips.ChipsEntriesFilter;
+import com.seraphim.chips.ChipsFactory;
 import com.seraphim.chips.ChipsView;
 import com.seraphim.chips.SimpleChipEntry;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     ChipsView chipsView;
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
         entries.add(new SimpleChipEntry("example 11"));
         chipsView.setSuggestions(entries);
         chipsView.setChipsFilter(new CustomFilter());
+        chipsView.setFactory(new CustomFactory());
     }
 
     public class CustomFilter implements ChipsEntriesFilter {
@@ -43,6 +46,24 @@ public class MainActivity extends AppCompatActivity {
                 if (entry.displayedName().contains("1")) newSuggs.add(entry);
             }
             return newSuggs;
+        }
+    }
+
+    public class CustomFactory implements ChipsFactory {
+        private final String[] wallpapers = {
+                "https://static-s.aa-cdn.net/img/gp/20600003648579/sQDEOzjChlykXN1TnUXBAfIK2mhVvqaiImwHFkw3nPx-VXu6sA4CqSw0vz7NMK76QBM=w300?v=1",
+                "http://lh6.ggpht.com/eAEhVDv1yUgdClKXNRQ5aHrrwDTaODndptQ0zOKWxscJ4OJA1iMSHqEzR2mKHMa8FBc=w256",
+                "http://lh3.googleusercontent.com/IWQAvuRipnpNDJvsxJn6uSZelx0BCbqJA-RMDpsw1D7tkzneyK9fq1AM-SM3jFJixA=w256",
+                "https://lh4.ggpht.com/hR29SvufnSNdBJrDa3xtqHXIfg3h8IH0Pv_4BfbDONn4om5RNHmnxJ4Pg8bYH7aTig=w256",
+                "https://lh5.ggpht.com/HEETJTfAyCEhkUBkmEVMNht1WylVqyRVqu9eyE-ysSBSmeLzorJE_QebnKizB308eQ=w256",
+                "https://static-s.aa-cdn.net/img/ios/987225753/7b0c3832d9cd33692534497841423178",
+                "http://www.img.lirent.net/2014/10/Android-Lollipop-Material-Design-Wallpaper-3.png"
+        };
+        private final Random random = new Random(5);
+
+        @Override
+        public ChipEntry createChip(String text) {
+            return new SimpleChipEntry(text, wallpapers[random.nextInt(wallpapers.length)]);
         }
     }
 }
