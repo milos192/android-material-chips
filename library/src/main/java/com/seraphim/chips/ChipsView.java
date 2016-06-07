@@ -276,6 +276,10 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         editText.setSuggestions(entries);
     }
 
+    public void setChipsFilter(ChipsEntriesFilter chipsEntriesFilter) {
+        editText.setChipsFilter(chipsEntriesFilter);
+    }
+
     public void setMode(Mode mode) {
         this.mode = mode;
     }

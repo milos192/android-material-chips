@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 public class SimpleChipEntry implements ChipEntry {
     private String name;
+    @Nullable
     private Uri imageUri;
 
     public SimpleChipEntry(String name) {
@@ -13,7 +14,7 @@ public class SimpleChipEntry implements ChipEntry {
 
     public SimpleChipEntry(String name, @Nullable String imageUrl) {
         this.name = name;
-        imageUri = Uri.parse(imageUrl);
+        if (imageUrl != null) imageUri = Uri.parse(imageUrl);
     }
 
     @Override
@@ -22,6 +23,7 @@ public class SimpleChipEntry implements ChipEntry {
     }
 
     @Override
+    @Nullable
     public Uri avatarUri() {
         return imageUri;
     }
