@@ -34,7 +34,7 @@ dependencies {
 Use the ChipsView class in your layout file.
 
 ```xml
-<com.doodle.android.chips.ChipsView
+<com.seraphim.chips.ChipsView
     android:id="@+id/chipsView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content" />
@@ -47,7 +47,7 @@ Use the ChipsView class in your layout file.
 Include ```xmlns:app="http://schemas.android.com/apk/res-auto"``` and customize your layout file.
 
 ```xml
-<com.doodle.android.chips.ChipsView
+<com.seraphim.chips.ChipsView
     android:id="@+id/chipsView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
