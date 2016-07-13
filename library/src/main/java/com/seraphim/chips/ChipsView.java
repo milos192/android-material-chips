@@ -118,6 +118,12 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     }
 
     @Override
+    public boolean requestFocus(int direction, Rect previouslyFocusedRect) {
+        if (editText==null) return super.requestFocus(direction, previouslyFocusedRect);
+        return editText.requestFocus();
+    }
+        
+    @Override
     protected boolean onRequestFocusInDescendants(int direction, Rect previouslyFocusedRect) {
         return true;
     }
