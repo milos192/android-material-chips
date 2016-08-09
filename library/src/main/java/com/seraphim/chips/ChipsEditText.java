@@ -39,38 +39,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.OnItemClickListener {
-    private InputConnectionWrapperInterface inputConnectionWrapperInterface;
-    private ItemClickListener itemClickListener;
-    private ChipsAdapter adapter;
-    private ChipsFilter filter;
+    private InputConnectionWrapperInterface mInputConnectionWrapperInterface;
+    private ItemClickListener mItemClickListener;
+    private ChipsAdapter mAdapter;
+    private ChipsFilter mChipsFilter;
 
     ChipsEditText(Context context, InputConnectionWrapperInterface inputConnectionWrapperInterface, final ItemClickListener itemClickListener) {
         super(context);
-        this.inputConnectionWrapperInterface = inputConnectionWrapperInterface;
-        this.itemClickListener = itemClickListener;
-        filter = new ChipsFilter().wrap(new DefaultChipsEntriesFilter());
-        adapter = new ChipsAdapter();
-        setAdapter(adapter);
+        mInputConnectionWrapperInterface = inputConnectionWrapperInterface;
+        mItemClickListener = itemClickListener;
+        mChipsFilter = new ChipsFilter().wrap(new DefaultChipsEntriesFilter());
+        mAdapter = new ChipsAdapter();
+        setAdapter(mAdapter);
         setOnItemClickListener(this);
         setThreshold(1);
     }
 
     void addSuggestions(List<ChipEntry> entries) {
-        adapter.addSuggestions(entries);
+        mAdapter.addSuggestions(entries);
     }
 
     void setSuggestions(List<ChipEntry> entries) {
-        adapter.setSuggestions(entries);
+        mAdapter.setSuggestions(entries);
     }
 
     void setChipsFilter(ChipsEntriesFilter chipsFilter) {
-        filter.wrap(chipsFilter);
+        mChipsFilter.wrap(chipsFilter);
     }
 
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-        if (inputConnectionWrapperInterface != null) {
-            return inputConnectionWrapperInterface.getInputConnection(super.onCreateInputConnection(outAttrs));
+        if (mInputConnectionWrapperInterface != null) {
+            return mInputConnectionWrapperInterface.getInputConnection(super.onCreateInputConnection(outAttrs));
         }
 
         return super.onCreateInputConnection(outAttrs);
@@ -81,7 +81,7 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
         try {
             ChipEntry entry = (ChipEntry) parent.getItemAtPosition(position);
             setText("");
-            itemClickListener.clicked(entry);
+            mItemClickListener.clicked(entry);
         } catch (ClassCastException e) {
             e.printStackTrace();
         }
@@ -101,17 +101,17 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
     }
 
     private class ChipsFilter extends Filter {
-        private ChipsEntriesFilter chipsFilter;
+        private ChipsEntriesFilter mChipsEntriesFilter;
 
         public ChipsFilter wrap(ChipsEntriesFilter chipsFilter) {
-            this.chipsFilter = chipsFilter;
+            mChipsEntriesFilter = chipsFilter;
             return this;
         }
 
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             FilterResults filterResults = new FilterResults();
-            List<ChipEntry> filteredSuggestions = chipsFilter.filter(constraint, adapter.suggestions);
+            List<ChipEntry> filteredSuggestions = mChipsEntriesFilter.filter(constraint, mAdapter.mSuggestions);
             filterResults.count = filteredSuggestions.size();
             filterResults.values = filteredSuggestions;
             return filterResults;
@@ -120,68 +120,68 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             if (results != null && results.count > 0) {
-                adapter.setCurrentEntries((List<ChipEntry>) results.values);
-                adapter.notifyDataSetChanged();
+                mAdapter.setCurrentEntries((List<ChipEntry>) results.values);
+                mAdapter.notifyDataSetChanged();
             } else {
-                adapter.notifyDataSetInvalidated();
+                mAdapter.notifyDataSetInvalidated();
             }
         }
     }
 
     private class DefaultChipsEntriesFilter implements ChipsEntriesFilter {
-        private String lastFiltered;
+        private String mLastFiltered;
 
         @Override
         public List<ChipEntry> filter(CharSequence constraint, List<ChipEntry> suggestions) {
-            if (constraint != null && !constraint.toString().equals(lastFiltered) && constraint.length() != 0) {
+            if (constraint != null && !constraint.toString().equals(mLastFiltered) && constraint.length() != 0) {
                 List<ChipEntry> entries = new ArrayList<>();
                 for (ChipEntry entry : suggestions) {
                     if (entry.displayedName().toLowerCase().contains(constraint.toString().toLowerCase()))
                         entries.add(entry);
                 }
-                lastFiltered = constraint.toString();
+                mLastFiltered = constraint.toString();
                 return entries;
             } else {
-                if (constraint != null) lastFiltered = constraint.toString();
-                else lastFiltered = null;
+                if (constraint != null) mLastFiltered = constraint.toString();
+                else mLastFiltered = null;
                 return suggestions;
             }
         }
     }
 
     private final class ChipsAdapter extends BaseAdapter implements Filterable {
-        final List<ChipEntry> suggestions;
-        final List<ChipEntry> currentEntries;
+        final List<ChipEntry> mSuggestions;
+        final List<ChipEntry> mCurrentEntries;
 
         ChipsAdapter() {
-            suggestions = new ArrayList<>();
-            currentEntries = new ArrayList<>();
+            mSuggestions = new ArrayList<>();
+            mCurrentEntries = new ArrayList<>();
         }
 
         void addSuggestions(List<ChipEntry> entries) {
-            suggestions.addAll(entries);
+            mSuggestions.addAll(entries);
             notifyDataSetChanged();
         }
 
         void setSuggestions(List<ChipEntry> entries) {
-            suggestions.clear();
-            suggestions.addAll(entries);
+            mSuggestions.clear();
+            mSuggestions.addAll(entries);
             notifyDataSetChanged();
         }
 
         void setCurrentEntries(List<ChipEntry> entries){
-            currentEntries.clear();
-            currentEntries.addAll(entries);
+            mCurrentEntries.clear();
+            mCurrentEntries.addAll(entries);
         }
 
         @Override
         public int getCount() {
-            return currentEntries.size();
+            return mCurrentEntries.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return currentEntries.get(position);
+            return mCurrentEntries.get(position);
         }
 
         @Override
@@ -194,7 +194,7 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
             if (convertView == null) {
                 convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.material_list_item_with_avatar_1, parent, false);
             }
-            ChipEntry chipEntry = currentEntries.get(position);
+            ChipEntry chipEntry = mCurrentEntries.get(position);
             Context context = convertView.getContext();
             ImageView imageView = (ImageView) convertView.findViewById(R.id.preview);
             if (chipEntry.avatarUri() != null) {
@@ -216,7 +216,7 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
 
         @Override
         public Filter getFilter() {
-            return filter;
+            return mChipsFilter;
         }
     }
 }

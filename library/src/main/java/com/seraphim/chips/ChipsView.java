@@ -41,20 +41,20 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
                                                      ChipsEditText.ItemClickListener,
                                                      TextView.OnEditorActionListener {
 
-    //<editor-fold desc="Static Fields">
+    // <editor-fold desc="Static Fields">
     private static final String TAG = "ChipsView";
     private static final int CHIP_HEIGHT = 32; // dp
     private static final int SPACING_TOP = 4; // dp
     private static final int SPACING_BOTTOM = 4; // dp
     public static final int DEFAULT_VERTICAL_SPACING = 1; // dp
     private static final int DEFAULT_MAX_HEIGHT = -1;
-    //</editor-fold>
+    // </editor-fold>
 
-    //<editor-fold desc="Resources">
+    // <editor-fold desc="Resources">
     private int chipsBgRes = R.drawable.chip_background;
-    //</editor-fold>
+    // </editor-fold>
 
-    //<editor-fold desc="Attributes">
+    // <editor-fold desc="Attributes">
     private int maxHeight; // px
     private int verticalSpacing;
 
@@ -69,9 +69,9 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     private int chipsTextColorErrorClicked;
     private int chipsPlaceholderResId;
     private int chipsDeleteResId;
-    //</editor-fold>
+    // </editor-fold>
 
-    //<editor-fold desc="Private Fields">
+    // <editor-fold desc="Private Fields">
     private float density;
     private RelativeLayout chipsContainer;
     private ChipsListener chipsListener;
@@ -83,9 +83,10 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     private ChipValidator chipsValidator;
     private Mode mode = Mode.ALL;
     private ChipsFactory factory;
-    //</editor-fold>
+    private boolean mAllowDeletions = true;
+    // </editor-fold>
 
-    //<editor-fold desc="Constructors">
+    // <editor-fold desc="Constructors">
     public ChipsView(Context context) {
         super(context);
         init();
@@ -109,7 +110,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         initAttr(context, attrs);
         init();
     }
-    //</editor-fold>
+    // </editor-fold>
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -124,7 +125,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         return true;
     }
 
-    //<editor-fold desc="Initialization">
+    // <editor-fold desc="Initialization">
     private void initAttr(Context context, AttributeSet attrs) {
         TypedArray a = context.getTheme().obtainStyledAttributes(
                 attrs,
@@ -231,9 +232,9 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
             }
         });
     }
-    //</editor-fold>
+    // </editor-fold>
 
-    //<editor-fold desc="Public Methods">
+    // <editor-fold desc="Public Methods">
     public void addChip(ChipEntry entry) {
         addChip(entry, false);
     }
@@ -294,13 +295,17 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         this.mode = mode;
     }
 
+    public void setAllowDeletions(boolean allow) {
+        mAllowDeletions = allow;
+    }
+
     public void setFactory(ChipsFactory factory) {
         this.factory = factory;
     }
 
-    //</editor-fold>
+    // </editor-fold>
 
-    //<editor-fold desc="Private Methods">
+    // <editor-fold desc="Private Methods">
 
     /**
      * rebuild all chips and place them right
@@ -401,9 +406,9 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     private void unselectAllChips() {
         unselectChipsExcept(null);
     }
-    //</editor-fold>
+    // </editor-fold>
 
-    //<editor-fold desc="Listeners Implementations">
+    // <editor-fold desc="Listeners Implementations">
     @Override
     public InputConnection getInputConnection(InputConnection target) {
         return new KeyInterceptingInputConnection(target);
@@ -423,9 +428,9 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         }
         return true;
     }
-    //</editor-fold>
+    // </editor-fold>
 
-    //<editor-fold desc="Inner Classes / Interfaces">
+    // <editor-fold desc="Inner Classes / Interfaces">
     private class EditTextListener implements TextWatcher {
         private boolean mIsPasteTextChange = false;
 
@@ -602,7 +607,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
                          }
                      });
             }
-            if (isSelected()) {
+            if (isSelected() && mAllowDeletions) {
                 if (chipsValidator != null && !chipsValidator.isValid(entry)) {
                     // not valid & show error
                     view.getBackground().setColorFilter(chipsBgColorErrorClicked, PorterDuff.Mode.SRC_ATOP);
@@ -693,5 +698,5 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
             return new SimpleChipEntry(text, null);
         }
     }
-    //</editor-fold>
+    // </editor-fold>
 }
