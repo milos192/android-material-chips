@@ -12,23 +12,6 @@ A different approach to implement android material chips since using transformed
 
 **Customize your layout and text**
  
-##Download
-
-**Gradle:** 
-
-via [jCenter](https://bintray.com/furiousseraphim/chips/materialchips/)
-```gradle
-buildscript {
-    repositories {
-        jcenter()
-    }
-}
-
-dependencies {
-    compile 'com.furiousseraphim.chips:material-chips:1.2.7'
-}
-```
-
 ##Usage
 
 Use the ChipsView class in your layout file.
