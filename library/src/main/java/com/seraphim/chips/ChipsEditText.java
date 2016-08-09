@@ -136,7 +136,7 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
             if (constraint != null && !constraint.toString().equals(mLastFiltered) && constraint.length() != 0) {
                 List<ChipEntry> entries = new ArrayList<>();
                 for (ChipEntry entry : suggestions) {
-                    if (entry.displayedName().toLowerCase().contains(constraint.toString().toLowerCase()))
+                    if (entry.getDisplayName().toLowerCase().contains(constraint.toString().toLowerCase()))
                         entries.add(entry);
                 }
                 mLastFiltered = constraint.toString();
@@ -197,9 +197,9 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
             ChipEntry chipEntry = mCurrentEntries.get(position);
             Context context = convertView.getContext();
             ImageView imageView = (ImageView) convertView.findViewById(R.id.preview);
-            if (chipEntry.avatarUri() != null) {
+            if (chipEntry.getAvatarUri() != null) {
                 Glide.with(context)
-                        .load(chipEntry.avatarUri())
+                        .load(chipEntry.getAvatarUri())
                         .asBitmap()
                         .transform(new CenterCrop(context))
                         .placeholder(R.color.paper)
@@ -210,7 +210,7 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
                 imageView.setImageDrawable(drawable);
                 imageView.setPadding(8, 8, 8, 8);
             }
-            ((TextView) convertView.findViewById(R.id.primary_text)).setText(chipEntry.displayedName());
+            ((TextView) convertView.findViewById(R.id.primary_text)).setText(chipEntry.getDisplayName());
             return convertView;
         }
 

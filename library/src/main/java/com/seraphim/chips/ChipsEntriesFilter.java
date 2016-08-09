@@ -1,6 +1,5 @@
 package com.seraphim.chips;
 
-
 import java.util.List;
 
 public interface ChipsEntriesFilter {

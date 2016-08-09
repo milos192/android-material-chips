@@ -3,7 +3,7 @@ package com.seraphim.chips;
 import android.net.Uri;
 
 public interface ChipEntry {
-    String displayedName();
+    String getDisplayName();
 
-    Uri avatarUri();
+    Uri getAvatarUri();
 }

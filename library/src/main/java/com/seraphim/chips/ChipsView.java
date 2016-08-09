@@ -542,13 +542,13 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         }
 
         public Chip(ChipEntry entry, boolean isIndelible) {
-            this.label = entry.displayedName();
-            this.photoUri = entry.avatarUri();
+            this.label = entry.getDisplayName();
+            this.photoUri = entry.getAvatarUri();
             this.entry = entry;
             this.isIndelible = isIndelible;
 
             if (this.label == null) {
-                this.label = entry.displayedName();
+                this.label = entry.getDisplayName();
             }
 
             if (this.label.length() > MAX_LABEL_LENGTH) {
