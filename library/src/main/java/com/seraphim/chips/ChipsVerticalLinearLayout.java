@@ -74,9 +74,6 @@ class ChipsVerticalLinearLayout extends LinearLayout {
             widthSum = 0;
             rowCounter++;
         }
-        if (width == 0) {
-            rowCounter = 0;
-        }
         widthSum += Math.round(ll.getChildCount() * (float) 8 * density);
         return new TextLineParams(rowCounter, widthSum);
     }
