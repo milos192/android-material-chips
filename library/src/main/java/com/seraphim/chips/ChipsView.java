@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputConnectionWrapper;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -38,8 +39,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class ChipsView extends ScrollView implements ChipsEditText.InputConnectionWrapperInterface,
-        ChipsEditText.ItemClickListener,
-        TextView.OnEditorActionListener {
+                                                     ChipsEditText.ItemClickListener,
+                                                     TextView.OnEditorActionListener {
 
     // <editor-fold desc="Static Fields">
     private static final String TAG = "ChipsView";
@@ -51,7 +52,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     // </editor-fold>
 
     // <editor-fold desc="Resources">
-    private int chipsBgRes = R.drawable.chip_background;
+    private int chipsBgRes = R.drawable.amc_chip_background;
     // </editor-fold>
 
     // <editor-fold desc="Attributes">
@@ -84,6 +85,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     private Mode mode = Mode.ALL;
     private ChipsFactory factory;
     private boolean mAllowDeletions = true;
+    private InputMethodManager mInputMethodManager;
     // </editor-fold>
 
     // <editor-fold desc="Constructors">
@@ -134,33 +136,33 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         try {
             maxHeight = a.getDimensionPixelSize(R.styleable.ChipsView_cv_max_height, DEFAULT_MAX_HEIGHT);
             verticalSpacing = a.getDimensionPixelSize(R.styleable.ChipsView_cv_vertical_spacing,
-                    (int) (DEFAULT_VERTICAL_SPACING * density));
+                                                      (int) (DEFAULT_VERTICAL_SPACING * density));
             chipsColor = a.getColor(R.styleable.ChipsView_cv_color,
-                    ContextCompat.getColor(context, R.color.base30));
+                                    ContextCompat.getColor(context, R.color.base30));
             chipsColorClicked = a.getColor(R.styleable.ChipsView_cv_color_clicked,
-                    ContextCompat.getColor(context, R.color.colorPrimaryDark));
+                                           ContextCompat.getColor(context, R.color.colorPrimaryDark));
             chipsColorErrorClicked = a.getColor(R.styleable.ChipsView_cv_color_error_clicked,
-                    ContextCompat.getColor(context, R.color.color_error));
+                                                ContextCompat.getColor(context, R.color.color_error));
 
             chipsBgColor = a.getColor(R.styleable.ChipsView_cv_bg_color,
-                    ContextCompat.getColor(context, R.color.base10));
+                                      ContextCompat.getColor(context, R.color.base10));
             chipsBgColorClicked = a.getColor(R.styleable.ChipsView_cv_bg_color_clicked,
-                    ContextCompat.getColor(context, R.color.blue));
+                                             ContextCompat.getColor(context, R.color.blue));
 
             chipsBgColorErrorClicked = a.getColor(R.styleable.ChipsView_cv_bg_color_clicked,
-                    ContextCompat.getColor(context, R.color.color_error));
+                                                  ContextCompat.getColor(context, R.color.color_error));
 
             chipsTextColor = a.getColor(R.styleable.ChipsView_cv_text_color,
-                    Color.BLACK);
+                                        Color.BLACK);
             chipsTextColorClicked = a.getColor(R.styleable.ChipsView_cv_text_color_clicked,
-                    Color.WHITE);
+                                               Color.WHITE);
             chipsTextColorErrorClicked = a.getColor(R.styleable.ChipsView_cv_text_color_clicked,
-                    Color.WHITE);
+                                                    Color.WHITE);
 
             chipsPlaceholderResId = a.getResourceId(R.styleable.ChipsView_cv_icon_placeholder,
-                    R.drawable.ic_person_24dp);
+                                                    R.drawable.ic_person_24dp);
             chipsDeleteResId = a.getResourceId(R.styleable.ChipsView_cv_icon_delete,
-                    R.drawable.ic_close_24dp);
+                                               R.drawable.ic_close_24dp);
         } finally {
             a.recycle();
         }
@@ -183,7 +185,9 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
 
         editText = new ChipsEditText(getContext(), this, this);
         RelativeLayout.LayoutParams editTextParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams
-                .MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                                                                             .MATCH_PARENT,
+                                                                                     ViewGroup.LayoutParams
+                                                                                             .WRAP_CONTENT);
         editTextParams.topMargin = (int) (SPACING_TOP * density);
         editTextParams.bottomMargin = (int) (SPACING_BOTTOM * density) + verticalSpacing;
         editText.setLayoutParams(editTextParams);
@@ -201,11 +205,13 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         rootChipsLayout = new ChipsVerticalLinearLayout(getContext(), verticalSpacing);
         rootChipsLayout.setOrientation(LinearLayout.VERTICAL);
         rootChipsLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
+                                                                   ViewGroup.LayoutParams.WRAP_CONTENT));
         rootChipsLayout.setPadding(0, (int) (SPACING_TOP * density), 0, 0);
         chipsContainer.addView(rootChipsLayout);
 
         factory = new DefaultFactory();
+
+        mInputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 
         initListener();
     }
@@ -361,7 +367,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         try {
             Chip chip = chipList.get(position);
             if (chip != null) {
-                onChipInteraction(chip, Chip.ACTION_OTHER);
+                onChipInteraction(chip, Chip.ACTION_DELETE);
             }
         } catch (IndexOutOfBoundsException e) {
             Log.e(TAG, "Out of bounds", e);
@@ -560,7 +566,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
             if (mView == null) {
                 mView = (RelativeLayout) inflate(getContext(), R.layout.chips_view, null);
                 mView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                        (int) (CHIP_HEIGHT * density)));
+                                                                      (int) (CHIP_HEIGHT * density)));
                 mAvatarView = (ImageView) mView.findViewById(R.id.ri_ch_avatar);
                 mIconWrapper = mView.findViewById(R.id.rl_ch_avatar);
                 mTextView = (TextView) mView.findViewById(R.id.tv_ch_name);
@@ -577,7 +583,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
                         mView.getBackground().setColorFilter(chipsBgColor, PorterDuff.Mode.SRC_ATOP);
                     }
                 });
-                mIconWrapper.setBackgroundResource(R.drawable.circle);
+                mIconWrapper.setBackgroundResource(R.drawable.amc_circle);
                 mTextView.setTextColor(mCustomChipColor == UNDEFINED_CUSTOM_COLOR ? chipsTextColor : mCustomChipColor);
 
                 // set icon resources
@@ -596,16 +602,16 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
             mTextView.setText(mLabel);
             if (mPhotoUri != null) {
                 Glide.with(getContext())
-                        .load(mPhotoUri)
-                        .asBitmap()
-                        .transform(new CenterCrop(getContext()))
-                        .into(new ImageViewTarget<Bitmap>(mAvatarView) {
-                            @Override
-                            protected void setResource(Bitmap resource) {
-                                mAvatarView.setImageBitmap(resource);
-                                mPersonIcon.setVisibility(INVISIBLE);
-                            }
-                        });
+                     .load(mPhotoUri)
+                     .asBitmap()
+                     .transform(new CenterCrop(getContext()))
+                     .into(new ImageViewTarget<Bitmap>(mAvatarView) {
+                         @Override
+                         protected void setResource(Bitmap resource) {
+                             mAvatarView.setImageBitmap(resource);
+                             mPersonIcon.setVisibility(INVISIBLE);
+                         }
+                     });
             }
             if (isSelected() && mAllowDeletions) {
                 if (chipsValidator != null && !chipsValidator.isValid(mEntry)) {
@@ -643,7 +649,6 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
 
         @Override
         public void onClick(View v) {
-            editText.clearFocus();
             onChipInteraction(this, translateIdToConst(v));
         }
 
@@ -681,8 +686,8 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         /**
          * Define a custom text color for this chip only.
          *
-         * @param color A color integer, or {@link #UNDEFINED_CUSTOM_COLOR}, if you want the chip to
-         *              use the color that the {@link ChipsView} has defined for all chips.
+         * @param color A color integer, or {@link #UNDEFINED_CUSTOM_COLOR}, if you want the chip to use the color that
+         *              the {@link ChipsView} has defined for all chips.
          */
         public void setCustomTextColor(int color) {
             mCustomChipColor = color;
@@ -695,8 +700,8 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         /**
          * Retrieves the integer color value of this chip.
          *
-         * @return The current custom color of this chip; {@link #UNDEFINED_CUSTOM_COLOR} means that
-         * this chip uses the value from the {@link ChipsView} control.
+         * @return The current custom color of this chip; {@link #UNDEFINED_CUSTOM_COLOR} means that this chip uses the
+         * value from the {@link ChipsView} control.
          */
         public int getCustomTextColor() {
             return mCustomChipColor;
