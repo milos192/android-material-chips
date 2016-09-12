@@ -39,14 +39,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.OnItemClickListener {
+
     private InputConnectionWrapperInterface mInputConnectionWrapperInterface;
     private ItemClickListener mItemClickListener;
     private ChipsAdapter mAdapter;
     private ChipsFilter mChipsFilter;
 
     ChipsEditText(Context context,
-                  InputConnectionWrapperInterface inputConnectionWrapperInterface,
-                  final ItemClickListener itemClickListener) {
+            InputConnectionWrapperInterface inputConnectionWrapperInterface,
+            final ItemClickListener itemClickListener) {
         super(context);
         mInputConnectionWrapperInterface = inputConnectionWrapperInterface;
         mItemClickListener = itemClickListener;
@@ -95,18 +96,20 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
     }
 
     /**
-     * Implementing classes wrap an incoming {@link InputConnection} with {@link
-     * #getInputConnection(InputConnection)}.
+     * Implementing classes wrap an incoming {@link InputConnection} with {@link #getInputConnection(InputConnection)}.
      */
     public interface InputConnectionWrapperInterface {
+
         InputConnection getInputConnection(InputConnection target);
     }
 
     public interface ItemClickListener {
+
         void clicked(ChipEntry entry);
     }
 
     private class ChipsFilter extends Filter {
+
         private ChipsEntriesFilter mChipsEntriesFilter;
 
         public ChipsFilter wrap(ChipsEntriesFilter chipsFilter) {
@@ -136,6 +139,7 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
     }
 
     private class DefaultChipsEntriesFilter implements ChipsEntriesFilter {
+
         private String mLastFiltered;
 
         @Override
@@ -161,6 +165,7 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
     }
 
     private final class ChipsAdapter extends BaseAdapter implements Filterable {
+
         private final List<ChipEntry> mSuggestions;
         private final List<ChipEntry> mCurrentEntries;
 
@@ -204,18 +209,20 @@ class ChipsEditText extends MaterialAutoCompleteTextView implements AdapterView.
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
                 convertView = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.material_list_item_with_avatar_1, parent, false);
+                                            .inflate(R.layout.material_list_item_with_avatar_1, parent, false);
             }
             ChipEntry chipEntry = mCurrentEntries.get(position);
             Context context = convertView.getContext();
             ImageView imageView = (ImageView) convertView.findViewById(R.id.preview);
-            if (chipEntry.getAvatarUri() != null) {
+            if (chipEntry.getPreloadedBitmap() != null) {
+                imageView.setImageBitmap(chipEntry.getPreloadedBitmap());
+            } else if (chipEntry.getAvatarUri() != null) {
                 Glide.with(context)
-                        .load(chipEntry.getAvatarUri())
-                        .asBitmap()
-                        .transform(new CenterCrop(context))
-                        .placeholder(R.color.paper)
-                        .into(imageView);
+                     .load(chipEntry.getAvatarUri())
+                     .asBitmap()
+                     .transform(new CenterCrop(context))
+                     .placeholder(R.color.paper)
+                     .into(imageView);
             } else {
                 Drawable drawable = ContextCompat.getDrawable(imageView.getContext(), R.drawable.ic_person_24dp);
                 drawable.setAlpha(150);
