@@ -174,6 +174,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         chipsContainer = new RelativeLayout(getContext());
         addView(chipsContainer);
 
+        // TODO: Allow dev to choose whether he wants this or not
         // Dummy item to prevent AutoCompleteTextView from receiving focus
         LinearLayout linearLayout = new LinearLayout(getContext());
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(0, 0);
@@ -205,9 +206,10 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         rootChipsLayout = new ChipsVerticalLinearLayout(getContext(), verticalSpacing);
         rootChipsLayout.setOrientation(LinearLayout.VERTICAL);
         rootChipsLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
-        rootChipsLayout.setPadding(0, (int) (SPACING_TOP * density), 0, 0);
+                ViewGroup.LayoutParams.MATCH_PARENT));
         chipsContainer.addView(rootChipsLayout);
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) rootChipsLayout.getLayoutParams();
+        layoutParams.addRule(RelativeLayout.CENTER_VERTICAL);
 
         factory = new DefaultFactory();
 
@@ -565,7 +567,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
 
         public View getView() {
             if (mView == null) {
-                mView = (RelativeLayout) inflate(getContext(), R.layout.chips_view, null);
+                mView = (RelativeLayout) View.inflate(getContext(), R.layout.chips_view, null);
                 mView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                         (int) (CHIP_HEIGHT * density)));
                 mAvatarView = (ImageView) mView.findViewById(R.id.ri_ch_avatar);
