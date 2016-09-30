@@ -74,9 +74,6 @@ class ChipsVerticalLinearLayout extends LinearLayout {
             widthSum = 0;
             rowCounter++;
         }
-        if (width == 0) {
-            rowCounter = 0;
-        }
         widthSum += Math.round(ll.getChildCount() * (float) 8 * density);
         return new TextLineParams(rowCounter, widthSum);
     }
@@ -85,7 +82,7 @@ class ChipsVerticalLinearLayout extends LinearLayout {
         LinearLayout ll = new LinearLayout(getContext());
         ll.setPadding(0, 0, 0, rowSpacing);
         ll.setOrientation(HORIZONTAL);
-        ll.setDividerDrawable(ContextCompat.getDrawable(getContext(), R.drawable.empty_vertical_divider));
+        ll.setDividerDrawable(ContextCompat.getDrawable(getContext(), R.drawable.amc_empty_vertical_divider));
         ll.setShowDividers(SHOW_DIVIDER_MIDDLE);
         addView(ll);
         lineLayouts.add(ll);

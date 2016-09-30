@@ -1,11 +1,13 @@
 package com.doodle.android.chips.sample;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.seraphim.chips.ChipEntry;
 import com.seraphim.chips.ChipsEntriesFilter;
 import com.seraphim.chips.ChipsFactory;
+import com.seraphim.chips.ChipsListener;
 import com.seraphim.chips.ChipsView;
 import com.seraphim.chips.SimpleChipEntry;
 
@@ -13,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ChipsListener {
     ChipsView chipsView;
 
     @Override
@@ -26,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
         final List<ChipEntry> entries = new ArrayList<>();
         entries.add(new SimpleChipEntry("example 1"));
         entries.add(new SimpleChipEntry("example 2",
-                                        "http://www.topofandroid" +
-                                                ".com/wp-content/uploads/2015/05/Android-L-Material-Design-Wallpapers-5.png"));
+                "http://www.topofandroid" +
+                        ".com/wp-content/uploads/2015/05/Android-L-Material-Design-Wallpapers-5.png"));
         entries.add(new SimpleChipEntry("example 3", "https://appcyla.files.wordpress.com/2015/02/m1.jpg"));
         entries.add(new SimpleChipEntry("example 4", "http://geekhounds.com/wp-content/uploads/2014/11/unnamed.jpg"));
         entries.add(new SimpleChipEntry("example 5"));
@@ -38,6 +40,22 @@ public class MainActivity extends AppCompatActivity {
         chipsView.setSuggestions(entries);
         chipsView.setChipsFilter(new CustomFilter());
         chipsView.setFactory(new CustomFactory());
+        chipsView.setChipsListener(this);
+    }
+
+    @Override
+    public void onChipAdded(ChipsView.Chip chip) {
+        chip.setCustomTextColor(Color.WHITE);
+    }
+
+    @Override
+    public void onChipDeleted(ChipsView.Chip chip) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence text) {
+
     }
 
     public class CustomFilter implements ChipsEntriesFilter {
