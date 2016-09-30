@@ -26,12 +26,12 @@ public class MainActivity extends AppCompatActivity implements ChipsListener {
 //        chipsView.setMode(ChipsView.Mode.ONLY_SUGGESTIONS);
 
         final List<ChipEntry> entries = new ArrayList<>();
-        entries.add(new SimpleChipEntry("example 1"));
-        entries.add(new SimpleChipEntry("example 2",
+        entries.add(new SimpleChipEntry("inx1"));
+        entries.add(new SimpleChipEntry("inx3",
                 "http://www.topofandroid" +
                         ".com/wp-content/uploads/2015/05/Android-L-Material-Design-Wallpapers-5.png"));
-        entries.add(new SimpleChipEntry("example 3", "https://appcyla.files.wordpress.com/2015/02/m1.jpg"));
-        entries.add(new SimpleChipEntry("example 4", "http://geekhounds.com/wp-content/uploads/2014/11/unnamed.jpg"));
+        entries.add(new SimpleChipEntry("ninja 210", "https://appcyla.files.wordpress.com/2015/02/m1.jpg"));
+        entries.add(new SimpleChipEntry("inx5", "http://geekhounds.com/wp-content/uploads/2014/11/unnamed.jpg"));
         entries.add(new SimpleChipEntry("example 5"));
         entries.add(new SimpleChipEntry("example 15"));
         entries.add(new SimpleChipEntry("example 6", "http://lifehacker.ru/wp-content/uploads/2014/11/14-14.png"));
