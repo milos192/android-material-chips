@@ -193,9 +193,10 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         editTextParams.bottomMargin = (int) (SPACING_BOTTOM * density) + verticalSpacing;
         editText.setLayoutParams(editTextParams);
         editText.setMinHeight((int) (CHIP_HEIGHT * density));
-        editText.setPadding(0, 0, 0, 0);
+        editText.setPaddings(0, 0, 0, 0);
         editText.setLineSpacing(verticalSpacing, (CHIP_HEIGHT * density) / editText.getLineHeight());
         editText.setBackgroundColor(Color.argb(0, 0, 0, 0));
+        editText.setHideUnderline(true);
         editText.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         editText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         editText.setOnEditorActionListener(this);
