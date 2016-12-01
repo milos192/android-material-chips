@@ -39,8 +39,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class ChipsView extends ScrollView implements ChipsEditText.InputConnectionWrapperInterface,
-        ChipsEditText.ItemClickListener,
-        TextView.OnEditorActionListener {
+        ChipsEditText.ItemClickListener, TextView.OnEditorActionListener {
 
     // <editor-fold desc="Static Fields">
     private static final String TAG = "ChipsView";
@@ -86,6 +85,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     private ChipsFactory factory;
     private boolean mAllowDeletions = true;
     private InputMethodManager mInputMethodManager;
+    private String mHint = "";
     // </editor-fold>
 
     // <editor-fold desc="Constructors">
@@ -114,6 +114,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     }
     // </editor-fold>
 
+    //<editor-fold desc="View overrides">
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (maxHeight != DEFAULT_MAX_HEIGHT) {
@@ -126,6 +127,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     protected boolean onRequestFocusInDescendants(int direction, Rect previouslyFocusedRect) {
         return true;
     }
+    //</editor-fold>
 
     // <editor-fold desc="Initialization">
     private void initAttr(Context context, AttributeSet attrs) {
@@ -186,17 +188,14 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
 
         editText = new ChipsEditText(getContext(), this, this);
         RelativeLayout.LayoutParams editTextParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams
-                .MATCH_PARENT,
-                ViewGroup.LayoutParams
-                        .WRAP_CONTENT);
+                .MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         editTextParams.topMargin = (int) (SPACING_TOP * density);
         editTextParams.bottomMargin = (int) (SPACING_BOTTOM * density) + verticalSpacing;
         editText.setLayoutParams(editTextParams);
         editText.setMinHeight((int) (CHIP_HEIGHT * density));
-        editText.setPaddings(0, 0, 0, 0);
+        editText.setPadding(0, 0, 0, 0);
         editText.setLineSpacing(verticalSpacing, (CHIP_HEIGHT * density) / editText.getLineHeight());
         editText.setBackgroundColor(Color.argb(0, 0, 0, 0));
-        editText.setHideUnderline(true);
         editText.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         editText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         editText.setOnEditorActionListener(this);
@@ -310,6 +309,16 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         this.factory = factory;
     }
 
+    public void setText(@NonNull String text) {
+        editText.setText(text);
+    }
+
+    public void setHint(@NonNull String hint) {
+        mHint = hint;
+        if (chipList.isEmpty()) {
+            editText.setHint(hint);
+        }
+    }
     // </editor-fold>
 
     // <editor-fold desc="Private Methods">
@@ -338,6 +347,12 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         addLeadingMarginSpan(textLineParams.lineMargin);
         if (moveCursor) {
             editText.setSelection(editText.length());
+        }
+
+        if (chipList.isEmpty()) {
+            editText.setHint(mHint);
+        } else {
+            editText.setHint("");
         }
     }
 
