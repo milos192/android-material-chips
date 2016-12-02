@@ -25,15 +25,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 class ChipsVerticalLinearLayout extends LinearLayout {
-    private List<LinearLayout> lineLayouts = new ArrayList<>();
-    private float density;
-    private int rowSpacing;
+    private List<LinearLayout> mLinearLayouts = new ArrayList<>();
+    private float mDensity;
+    private int mRowSpacing;
 
     public ChipsVerticalLinearLayout(Context context, int rowSpacing) {
         super(context);
 
-        density = getResources().getDisplayMetrics().density;
-        this.rowSpacing = rowSpacing;
+        mDensity = getResources().getDisplayMetrics().density;
+        mRowSpacing = rowSpacing;
 
         init();
     }
@@ -52,21 +52,22 @@ class ChipsVerticalLinearLayout extends LinearLayout {
         int widthSum = 0;
         int rowCounter = 0;
 
-        LinearLayout ll = createHorizontalView();
+        LinearLayout linearLayout = createHorizontalView();
 
         for (ChipsView.Chip chip : chips) {
             View view = chip.getView();
-            view.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+            view.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
+                    MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
 
             // if width exceed current width. create a new LinearLayout
             if (widthSum + view.getMeasuredWidth() > width) {
                 rowCounter++;
                 widthSum = 0;
-                ll = createHorizontalView();
+                linearLayout = createHorizontalView();
             }
 
             widthSum += view.getMeasuredWidth();
-            ll.addView(view);
+            linearLayout.addView(view);
         }
 
         // check if there is enough space left
@@ -74,26 +75,26 @@ class ChipsVerticalLinearLayout extends LinearLayout {
             widthSum = 0;
             rowCounter++;
         }
-        widthSum += Math.round(ll.getChildCount() * (float) 8 * density);
+        widthSum += Math.round(linearLayout.getChildCount() * (float) 8 * mDensity);
         return new TextLineParams(rowCounter, widthSum);
     }
 
     private LinearLayout createHorizontalView() {
-        LinearLayout ll = new LinearLayout(getContext());
-        ll.setPadding(0, 0, 0, rowSpacing);
-        ll.setOrientation(HORIZONTAL);
-        ll.setDividerDrawable(ContextCompat.getDrawable(getContext(), R.drawable.amc_empty_vertical_divider));
-        ll.setShowDividers(SHOW_DIVIDER_MIDDLE);
-        addView(ll);
-        lineLayouts.add(ll);
-        return ll;
+        LinearLayout linearLayout = new LinearLayout(getContext());
+        linearLayout.setPadding(0, 0, 0, mRowSpacing);
+        linearLayout.setOrientation(HORIZONTAL);
+        linearLayout.setDividerDrawable(ContextCompat.getDrawable(getContext(), R.drawable.amc_empty_vertical_divider));
+        linearLayout.setShowDividers(SHOW_DIVIDER_MIDDLE);
+        addView(linearLayout);
+        mLinearLayouts.add(linearLayout);
+        return linearLayout;
     }
 
     private void clearChipsViews() {
-        for (LinearLayout linearLayout : lineLayouts) {
+        for (LinearLayout linearLayout : mLinearLayouts) {
             linearLayout.removeAllViews();
         }
-        lineLayouts.clear();
+        mLinearLayouts.clear();
         removeAllViews();
     }
 
