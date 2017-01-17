@@ -24,7 +24,7 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-class ChipsVerticalLinearLayout extends LinearLayout {
+class ChipsVerticalLinearLayout<E extends ChipEntry> extends LinearLayout {
     private List<LinearLayout> mLinearLayouts = new ArrayList<>();
     private float mDensity;
     private int mRowSpacing;
@@ -42,7 +42,7 @@ class ChipsVerticalLinearLayout extends LinearLayout {
         setOrientation(VERTICAL);
     }
 
-    public TextLineParams onChipsChanged(List<ChipsView.Chip> chips) {
+    public TextLineParams onChipsChanged(List<ChipsView<E>.Chip<E>> chips) {
         clearChipsViews();
 
         int width = getWidth();

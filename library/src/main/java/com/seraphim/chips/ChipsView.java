@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ChipsView extends ScrollView implements ChipsEditText.InputConnectionWrapperInterface,
+public class ChipsView<E extends ChipEntry> extends ScrollView implements ChipsEditText.InputConnectionWrapperInterface,
         ChipsEditText.ItemClickListener, TextView.OnEditorActionListener {
 
     // <editor-fold desc="Static Fields">
@@ -79,7 +79,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     private ChipsEditText editText;
     private ChipsVerticalLinearLayout rootChipsLayout;
     private EditTextListener editTextListener;
-    private List<Chip> chipList = new ArrayList<>();
+    private List<Chip<E>> chipList = new ArrayList<>();
     private Object currentEditTextSpan;
     private ChipValidator chipsValidator;
     private Mode mode = Mode.ALL;
@@ -265,13 +265,27 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     }
 
     @NonNull
-    public List<Chip> getChips() {
+    public List<Chip<E>> getChips() {
         return Collections.unmodifiableList(chipList);
     }
 
     public boolean removeChipBy(ChipEntry entry) {
         for (int i = 0; i < chipList.size(); i++) {
             if (chipList.get(i).mEntry != null && chipList.get(i).mEntry.equals(entry)) {
+                Chip chip = chipList.remove(i);
+                if (chipsListener != null) {
+                    chipsListener.onChipDeleted(chip);
+                }
+                onChipsChanged(true);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean removeChipBy(E entry, EqualityFunction<E> equalityFunction) {
+        for (int i = 0; i < chipList.size(); i++) {
+            if (chipList.get(i).mEntry != null && equalityFunction.equal(chipList.get(i).mEntry, entry)) {
                 Chip chip = chipList.remove(i);
                 if (chipsListener != null) {
                     chipsListener.onChipDeleted(chip);
@@ -546,7 +560,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         }
     }
 
-    public class Chip implements OnClickListener {
+    public class Chip<T extends ChipEntry> implements OnClickListener {
 
         private static final int MAX_LABEL_LENGTH = 30;
         private static final int ACTION_DELETE = 0;
@@ -556,7 +570,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
 
         private String mLabel;
         private final Uri mPhotoUri;
-        private final ChipEntry mEntry;
+        private final T mEntry;
         private final boolean mIsIndelible;
 
         private RelativeLayout mView;
@@ -572,11 +586,11 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
 
         private int mCustomChipColor;
 
-        public Chip(ChipEntry entry) {
+        public Chip(T entry) {
             this(entry, false);
         }
 
-        public Chip(ChipEntry entry, boolean isIndelible) {
+        public Chip(T entry, boolean isIndelible) {
             mLabel = entry.getDisplayName();
             mPhotoUri = entry.getAvatarUri();
             mEntry = entry;
@@ -703,7 +717,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
             mIsSelected = isSelected;
         }
 
-        public ChipEntry getEntry() {
+        public T getEntry() {
             return mEntry;
         }
 
@@ -756,6 +770,10 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         public ChipEntry createChip(String text) {
             return new SimpleChipEntry(text, null);
         }
+    }
+
+    public interface EqualityFunction<E> {
+        boolean equal(E e1, E e2);
     }
     // </editor-fold>
 }
