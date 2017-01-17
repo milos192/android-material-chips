@@ -1,9 +1,9 @@
 package com.seraphim.chips;
 
-public interface ChipsListener {
-    void onChipAdded(ChipsView.Chip chip);
+public interface ChipsListener<E extends ChipEntry> {
+    void onChipAdded(Chip<E> chip);
 
-    void onChipDeleted(ChipsView.Chip chip);
+    void onChipDeleted(Chip<E> chip);
 
     void onTextChanged(CharSequence text);
 }

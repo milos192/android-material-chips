@@ -42,7 +42,7 @@ class ChipsVerticalLinearLayout<E extends ChipEntry> extends LinearLayout {
         setOrientation(VERTICAL);
     }
 
-    public TextLineParams onChipsChanged(List<ChipsView<E>.Chip<E>> chips) {
+    public TextLineParams onChipsChanged(List<Chip<E>> chips) {
         clearChipsViews();
 
         int width = getWidth();
@@ -54,7 +54,7 @@ class ChipsVerticalLinearLayout<E extends ChipEntry> extends LinearLayout {
 
         LinearLayout linearLayout = createHorizontalView();
 
-        for (ChipsView.Chip chip : chips) {
+        for (Chip chip : chips) {
             View view = chip.getView();
             view.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
                     MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));

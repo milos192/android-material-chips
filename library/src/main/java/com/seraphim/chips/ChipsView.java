@@ -3,11 +3,8 @@ package com.seraphim.chips;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.Rect;
-import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -25,15 +22,10 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputConnectionWrapper;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.request.target.ImageViewTarget;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +36,7 @@ public class ChipsView<E extends ChipEntry> extends ScrollView implements ChipsE
 
     // <editor-fold desc="Static Fields">
     private static final String TAG = "ChipsView";
-    private static final int CHIP_HEIGHT = 32; // dp
+    static final int CHIP_HEIGHT = 32; // dp
     private static final int SPACING_TOP = 4; // dp
     private static final int SPACING_BOTTOM = 4; // dp
     private static final int DEFAULT_MAX_HEIGHT = -1;
@@ -52,39 +44,39 @@ public class ChipsView<E extends ChipEntry> extends ScrollView implements ChipsE
     // </editor-fold>
 
     // <editor-fold desc="Resources">
-    private int chipsBgRes = R.drawable.amc_chip_background;
+    int chipsBgRes = R.drawable.amc_chip_background;
     // </editor-fold>
 
     // <editor-fold desc="Attributes">
     private int maxHeight; // px
     private int verticalSpacing;
 
-    private int chipsColor;
-    private int chipsColorClicked;
-    private int chipsColorErrorClicked;
-    private int chipsBgColor;
-    private int chipsBgColorClicked;
-    private int chipsBgColorErrorClicked;
-    private int chipsTextColor;
-    private int chipsTextColorClicked;
-    private int chipsTextColorErrorClicked;
-    private int chipsPlaceholderResId;
-    private int chipsDeleteResId;
+    int chipsColor;
+    int chipsColorClicked;
+    int chipsColorErrorClicked;
+    int chipsBgColor;
+    int chipsBgColorClicked;
+    int chipsBgColorErrorClicked;
+    int chipsTextColor;
+    int chipsTextColorClicked;
+    int chipsTextColorErrorClicked;
+    int chipsPlaceholderResId;
+    int chipsDeleteResId;
     // </editor-fold>
 
     // <editor-fold desc="Private Fields">
-    private float density;
+    float density;
     private RelativeLayout chipsContainer;
-    private ChipsListener chipsListener;
+    private ChipsListener<E> chipsListener;
     private ChipsEditText editText;
     private ChipsVerticalLinearLayout rootChipsLayout;
     private EditTextListener editTextListener;
     private List<Chip<E>> chipList = new ArrayList<>();
     private Object currentEditTextSpan;
-    private ChipValidator chipsValidator;
+    ChipValidator chipsValidator;
     private Mode mode = Mode.ALL;
     private ChipsFactory factory;
-    private boolean mAllowDeletions = true;
+    boolean mAllowDeletions = true;
     private InputMethodManager mInputMethodManager;
     private String mHint = "";
     // </editor-fold>
@@ -248,7 +240,7 @@ public class ChipsView<E extends ChipEntry> extends ScrollView implements ChipsE
     }
 
     public void addChip(ChipEntry entry, boolean isIndelible) {
-        Chip chip = new Chip(entry, isIndelible);
+        Chip chip = new Chip(this, entry, isIndelible);
         chipList.add(chip);
         // TODO: Investigate whether it would be better to call onChipAdded after it has been drawn
         if (chipsListener != null) {
@@ -297,7 +289,7 @@ public class ChipsView<E extends ChipEntry> extends ScrollView implements ChipsE
         return false;
     }
 
-    public void setChipsListener(ChipsListener chipsListener) {
+    public void setChipsListener(ChipsListener<E> chipsListener) {
         this.chipsListener = chipsListener;
     }
 
@@ -416,7 +408,7 @@ public class ChipsView<E extends ChipEntry> extends ScrollView implements ChipsE
         }
     }
 
-    private void onChipInteraction(final Chip chip, int mode) {
+    void onChipInteraction(final Chip chip, int mode) {
         unselectChipsExcept(chip);
         if (chip.isSelected() && mode == Chip.ACTION_DELETE) {
             chipList.remove(chip);
@@ -557,205 +549,6 @@ public class ChipsView<E extends ChipEntry> extends ScrollView implements ChipsE
             }
 
             return super.deleteSurroundingText(beforeLength, afterLength);
-        }
-    }
-
-    public class Chip<T extends ChipEntry> implements OnClickListener {
-
-        private static final int MAX_LABEL_LENGTH = 30;
-        private static final int ACTION_DELETE = 0;
-        private static final int ACTION_OTHER = 1;
-
-        public static final int UNDEFINED_CUSTOM_COLOR = 0;
-
-        private String mLabel;
-        private final Uri mPhotoUri;
-        private final T mEntry;
-        private final boolean mIsIndelible;
-
-        private RelativeLayout mView;
-        private View mIconWrapper;
-        private TextView mTextView;
-
-        private ImageView mAvatarView;
-        private ImageView mPersonIcon;
-        private ImageView mCloseIcon;
-        private ImageView mErrorIcon;
-
-        private boolean mIsSelected;
-
-        private int mCustomChipColor;
-
-        public Chip(T entry) {
-            this(entry, false);
-        }
-
-        public Chip(T entry, boolean isIndelible) {
-            mLabel = entry.getDisplayName();
-            mPhotoUri = entry.getAvatarUri();
-            mEntry = entry;
-            mIsIndelible = isIndelible;
-
-            if (mLabel == null) {
-                mLabel = entry.getDisplayName();
-            }
-
-            if (mLabel.length() > MAX_LABEL_LENGTH) {
-                mLabel = mLabel.substring(0, MAX_LABEL_LENGTH) + "...";
-            }
-        }
-
-        public View getView() {
-            if (mView == null) {
-                mView = (RelativeLayout) View.inflate(getContext(), R.layout.chips_view, null);
-                mView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                        (int) (CHIP_HEIGHT * density)));
-                mAvatarView = (ImageView) mView.findViewById(R.id.ri_ch_avatar);
-                mIconWrapper = mView.findViewById(R.id.rl_ch_avatar);
-                mTextView = (TextView) mView.findViewById(R.id.tv_ch_name);
-                mPersonIcon = (ImageView) mView.findViewById(R.id.iv_ch_person);
-                mCloseIcon = (ImageView) mView.findViewById(R.id.iv_ch_close);
-
-                mErrorIcon = (ImageView) mView.findViewById(R.id.iv_ch_error);
-
-                // set inital res & attrs
-                mView.setBackgroundResource(chipsBgRes);
-                mView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mView.getBackground().setColorFilter(chipsBgColor, PorterDuff.Mode.SRC_ATOP);
-                    }
-                });
-                mIconWrapper.setBackgroundResource(R.drawable.amc_circle);
-                mTextView.setTextColor(mCustomChipColor == UNDEFINED_CUSTOM_COLOR ? chipsTextColor : mCustomChipColor);
-
-                // set icon resources
-                mPersonIcon.setBackgroundResource(chipsPlaceholderResId);
-                mCloseIcon.setBackgroundResource(chipsDeleteResId);
-
-                mCloseIcon.setOnClickListener(this);
-                mView.setOnClickListener(this);
-                mIconWrapper.setOnClickListener(this);
-            }
-            updateViews();
-            return mView;
-        }
-
-        private void updateViews() {
-            mTextView.setText(mLabel);
-            if (mEntry.getPreloadedBitmap() != null) {
-                mAvatarView.setImageBitmap(mEntry.getPreloadedBitmap());
-                mPersonIcon.setVisibility(INVISIBLE);
-            } else if (mPhotoUri != null) {
-                Glide.with(getContext())
-                     .load(mPhotoUri)
-                     .asBitmap()
-                     .transform(new CenterCrop(getContext()))
-                     .into(new ImageViewTarget<Bitmap>(mAvatarView) {
-                         @Override
-                         protected void setResource(Bitmap resource) {
-                             mAvatarView.setImageBitmap(resource);
-                             mPersonIcon.setVisibility(INVISIBLE);
-                         }
-                     });
-            }
-            if (isSelected() && mAllowDeletions) {
-                if (chipsValidator != null && !chipsValidator.isValid(mEntry)) {
-                    // not valid & show error
-                    mView.getBackground().setColorFilter(chipsBgColorErrorClicked, PorterDuff.Mode.SRC_ATOP);
-                    mTextView.setTextColor(chipsTextColorErrorClicked);
-                    mIconWrapper.getBackground().setColorFilter(chipsColorErrorClicked, PorterDuff.Mode.SRC_ATOP);
-                    mErrorIcon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
-                } else {
-                    mView.getBackground().setColorFilter(chipsBgColorClicked, PorterDuff.Mode.SRC_ATOP);
-                    mTextView.setTextColor(chipsTextColorClicked);
-                    mIconWrapper.getBackground().setColorFilter(chipsColorClicked, PorterDuff.Mode.SRC_ATOP);
-                }
-                mPersonIcon.animate().alpha(0.0f).setDuration(200).start();
-                mAvatarView.animate().alpha(0.0f).setDuration(200).start();
-                mCloseIcon.animate().alpha(1f).setDuration(200).setStartDelay(100).start();
-
-            } else {
-                if (chipsValidator != null && !chipsValidator.isValid(mEntry)) {
-                    // not valid & show error
-                    mErrorIcon.setVisibility(View.VISIBLE);
-                    mErrorIcon.setColorFilter(null);
-                } else {
-                    mErrorIcon.setVisibility(View.GONE);
-                }
-                mView.getBackground().setColorFilter(chipsBgColor, PorterDuff.Mode.SRC_ATOP);
-                mTextView.setTextColor(mCustomChipColor == UNDEFINED_CUSTOM_COLOR ? chipsTextColor : mCustomChipColor);
-                mIconWrapper.getBackground().setColorFilter(chipsColor, PorterDuff.Mode.SRC_ATOP);
-
-                mPersonIcon.animate().alpha(0.3f).setDuration(200).setStartDelay(100).start();
-                mAvatarView.animate().alpha(1f).setDuration(200).setStartDelay(100).start();
-                mCloseIcon.animate().alpha(0.0f).setDuration(200).start();
-            }
-        }
-
-        @Override
-        public void onClick(View v) {
-            onChipInteraction(this, translateIdToConst(v));
-        }
-
-        private int translateIdToConst(View v) {
-            if (v.getId() == R.id.iv_ch_close) {
-                return ACTION_DELETE;
-            } else {
-                return ACTION_OTHER;
-            }
-        }
-
-        public boolean isSelected() {
-            return mIsSelected;
-        }
-
-        public void setSelected(boolean isSelected) {
-            if (mIsIndelible) {
-                return;
-            }
-            mIsSelected = isSelected;
-        }
-
-        public T getEntry() {
-            return mEntry;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (mEntry != null && o instanceof ChipEntry) {
-                return mEntry.equals(o);
-            }
-            return super.equals(o);
-        }
-
-        /**
-         * Define a custom text color for this chip only.
-         *
-         * @param color A color integer, or {@link #UNDEFINED_CUSTOM_COLOR}, if you want the chip to use the color that the {@link ChipsView} has defined for
-         * all chips.
-         */
-        public void setCustomTextColor(int color) {
-            mCustomChipColor = color;
-            if (mTextView != null) {
-                // Probably not the best solution, but calling updateViews() just for this seems expensive
-                mTextView.setTextColor(color);
-            }
-        }
-
-        /**
-         * Retrieves the integer color value of this chip.
-         *
-         * @return The current custom color of this chip; {@link #UNDEFINED_CUSTOM_COLOR} means that this chip uses the value from the {@link ChipsView}
-         * control.
-         */
-        public int getCustomTextColor() {
-            return mCustomChipColor;
-        }
-
-        @Override
-        public String toString() {
-            return "{" + "[Entry: " + mEntry + "]" + "}";
         }
     }
 

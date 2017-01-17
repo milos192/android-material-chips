@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.seraphim.chips.Chip;
 import com.seraphim.chips.ChipEntry;
 import com.seraphim.chips.ChipsEntriesFilter;
 import com.seraphim.chips.ChipsFactory;
@@ -44,12 +45,12 @@ public class MainActivity extends AppCompatActivity implements ChipsListener {
     }
 
     @Override
-    public void onChipAdded(ChipsView.Chip chip) {
+    public void onChipAdded(Chip chip) {
         chip.setCustomTextColor(Color.WHITE);
     }
 
     @Override
-    public void onChipDeleted(ChipsView.Chip chip) {
+    public void onChipDeleted(Chip chip) {
 
     }
 
