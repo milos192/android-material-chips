@@ -459,10 +459,12 @@ public class ChipsView<E extends ChipEntry> extends ScrollView implements ChipsE
 
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        if (mode == Mode.ALL && !editText.getText().toString().isEmpty() && actionId == EditorInfo.IME_ACTION_DONE) {
-            ChipEntry entry = factory.createChip(editText.getText().toString());
-            editText.setText("");
-            addChip(entry);
+        if (chipsListener == null || !chipsListener.onEditorAction(v, actionId, event)) {
+            if (mode == Mode.ALL && !editText.getText().toString().isEmpty() && actionId == EditorInfo.IME_ACTION_DONE) {
+                ChipEntry entry = factory.createChip(editText.getText().toString());
+                editText.setText("");
+                addChip(entry);
+            }
         }
         return true;
     }

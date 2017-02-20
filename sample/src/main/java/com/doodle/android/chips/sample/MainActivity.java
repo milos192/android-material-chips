@@ -3,6 +3,8 @@ package com.doodle.android.chips.sample;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
+import android.widget.TextView;
 
 import com.seraphim.chips.Chip;
 import com.seraphim.chips.ChipEntry;
@@ -57,6 +59,11 @@ public class MainActivity extends AppCompatActivity implements ChipsListener {
     @Override
     public void onTextChanged(CharSequence text) {
 
+    }
+
+    @Override
+    public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
+        return false;
     }
 
     public class CustomFilter implements ChipsEntriesFilter {
