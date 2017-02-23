@@ -459,12 +459,15 @@ public class ChipsView<E extends ChipEntry> extends ScrollView implements ChipsE
 
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        if (chipsListener == null || !chipsListener.onEditorAction(v, actionId, event)) {
-            if (mode == Mode.ALL && !editText.getText().toString().isEmpty() && actionId == EditorInfo.IME_ACTION_DONE) {
-                ChipEntry entry = factory.createChip(editText.getText().toString());
-                editText.setText("");
-                addChip(entry);
-            }
+        if (mode == Mode.ALL && !editText.getText().toString().isEmpty() && actionId == EditorInfo.IME_ACTION_DONE) {
+            ChipEntry entry = factory.createChip(editText.getText().toString());
+            editText.setText("");
+            addChip(entry);
+        }
+        // The upper action can be disabled by setting the Mode, so there's no use in having another way to disable it (via returning false),
+        // and there is an added benefit from having the factory created Chip in the chips list.
+        if (chipsListener != null) {
+            chipsListener.onEditorAction(v, actionId, event);
         }
         return true;
     }
