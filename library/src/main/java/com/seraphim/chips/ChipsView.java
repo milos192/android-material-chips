@@ -289,6 +289,12 @@ public class ChipsView<E extends ChipEntry> extends ScrollView implements ChipsE
         return false;
     }
 
+    public void clearAllChips() {
+        // Maybe make a verison with an iterator that calls onChipDeleted for every item? Could be a performance issue on the main thread.
+        chipList.clear();
+        onChipsChanged(true);
+    }
+
     public void setChipsListener(ChipsListener<E> chipsListener) {
         this.chipsListener = chipsListener;
     }
