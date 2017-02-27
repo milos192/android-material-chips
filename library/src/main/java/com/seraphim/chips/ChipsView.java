@@ -29,6 +29,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 public class ChipsView<E extends ChipEntry> extends ScrollView implements ChipsEditText.InputConnectionWrapperInterface,
@@ -290,9 +291,15 @@ public class ChipsView<E extends ChipEntry> extends ScrollView implements ChipsE
     }
 
     public void clearAllChips() {
-        // Maybe make a verison with an iterator that calls onChipDeleted for every item? Could be a performance issue on the main thread.
-        chipList.clear();
-        onChipsChanged(true);
+        Iterator<Chip<E>> chipIterator = chipList.iterator();
+        while (chipIterator.hasNext()) {
+            Chip<E> chip = chipIterator.next();
+            chipIterator.remove();
+            if (chipsListener != null) {
+                chipsListener.onChipDeleted(chip);
+            }
+            onChipsChanged(true);
+        }
     }
 
     public void setChipsListener(ChipsListener<E> chipsListener) {
